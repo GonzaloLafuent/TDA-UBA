@@ -57,8 +57,6 @@ main(){
     rutaMinima(d,m,s,0);
 
     showVector(res);
-
-    cout<<sum_min<<endl;
-
+    
     return 0;
 }
