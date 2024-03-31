@@ -76,6 +76,7 @@ void maxiSubconjunto(int indice,int k,vector<vector<int>> m,vector<int>& sol_par
             }
         }
     }
+    showVector(sol_parcial);
 }
 
 int main() {
