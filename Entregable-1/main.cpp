@@ -5,26 +5,11 @@
 
 using namespace std;
 
-void orden_lexicografico(vector<string>& player_sel_parcial,vector<string>& attackers){
-    vector<string> aux = {};
-    //Agrego los nombres de los delanteros a ordenar
-    for (size_t i = 0; i < 5; i++) {
-        aux.push_back(attackers[i]);
-        if( !count(attackers.begin(),attackers.end(),player_sel_parcial[i]) )
-            aux.push_back(player_sel_parcial[i]);
-    }
+bool comparatorJugador(tuple<string,int,int> x,tuple<string,int,int> y){
+    return get<0>(x) < get<0>(y);
+}
 
-    //Los ordeno todo de forma lexicografica
-    sort(aux.begin(),aux.end());
-    
-    //Agrego a la mejor solucion los delanteros de menor orden lexicografico
-    for (size_t i = 0; i < 5; i++){
-        attackers[i] = aux[i];
-    }
-
-} 
-
-//k = llevo la cuenta de los elementos agregados
+ //k = llevo la cuenta de los elementos agregados
 //j = posicion del jugador que veo si agrego o no
 //sum_parcial = suma habilidad de defensores o atacantes
 //player_sel_parcial = voy guardando la solucion
@@ -67,8 +52,6 @@ void elegir_jugadores(int k,int j,int sum_parcial, vector<string>& player_sel_pa
                 players_sel[0] = player_sel_parcial;
                 players_sel[1] = deffenders;
             } else if(sums[1] == max_sums[1] ){
-                //Si estan empatados en defensa y en ataque paso al desempate lexicografico
-                orden_lexicografico(player_sel_parcial,players_sel[0]);
             }
         }
     } else if(k < 5 && j<10) {
@@ -131,7 +114,12 @@ int main(){
 
         //Solucion de delanteros parciales
         vector<string> sol_parcial = {}; 
-        elegir_jugadores(0,0,0,sol_parcial,cases[i],max_sums,map_players,players_sel); 
+
+        vector<tuple<string,int,int>> players = cases[i];
+
+        sort(players.begin(),players.end(),comparatorJugador);
+
+        elegir_jugadores(0,0,0,sol_parcial,players,max_sums,map_players,players_sel); 
     
         sort(players_sel[0].begin(),players_sel[0].end());
         sort(players_sel[1].begin(),players_sel[1].end());
