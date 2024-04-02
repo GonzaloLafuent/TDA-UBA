@@ -44,6 +44,7 @@ void elegir_jugadores(int k,int j,int sum_parcial, vector<string>& player_sel_pa
 
             vector<string> deffenders = {};
             elegir_jugadores(k+1,0,0,deffenders,players,max_sums,map_players,players_sel);
+            players_sel[1] = deffenders;
         } else if( sum_parcial > max_sums[0]){
             //2° caso: recibo un conjunto de delanteros cuya suma de habilidades es mayor a mi mejor solucion hasta ahora  
             max_sums[0] = sum_parcial;
@@ -52,6 +53,7 @@ void elegir_jugadores(int k,int j,int sum_parcial, vector<string>& player_sel_pa
 
             vector<string> deffenders = {};
             elegir_jugadores(k+1,0,0,deffenders,players,max_sums,map_players,players_sel);
+            players_sel[1] = deffenders;
         } else if (sum_parcial == max_sums[0]){
             //3° caso: la suma de los delanteros es la misma a mi mejor solucion
             //Calculo las habilidades defensivas de la solucion parcial
