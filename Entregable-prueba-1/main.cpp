@@ -68,9 +68,7 @@ void elegir_jugadores(int k,int j,int sum_parcial, vector<string>& player_sel_pa
                 sum_max_deffenders = sum_deffenders;
 
                 players_sel = player_comparar;
-            } else if( sum_deffenders == sum_max_deffenders ){
-                
-            }
+            } 
         }
     } else if(k < 5 && j < 10) {
         player_sel_parcial.push_back(get<0>(players[j]));
