@@ -18,34 +18,33 @@ vector<pair<int,int>> buildings = {
 int max_increasing = -1;
 int max_decreasing = -1;
 
-bool increasing(vector<pair<int,int>>& buildings_subseq){
-    bool increase = true;    
-    for (size_t i = 0; i < buildings_subseq.size()-1 && increase; i++){
-        increase = buildings_subseq[i].second < buildings_subseq[i+1].second;
-    }
-    return increase;
-}   
-
-bool decreasing(vector<pair<int,int>>& buildings_subseq){
-    bool decrease = true;    
-    for (size_t i = 0; i < buildings_subseq.size()-1 && decrease; i++){
-        decrease = buildings_subseq[i].second > buildings_subseq[i+1].second;
-    }
-    return decrease;
-} 
-
-void skylines(int i,int n,int subseq_width,vector<pair<int,int>>& buildings_subseq){
+void skylines(int i,int n,bool inc,bool dec,int subseq_width,vector<pair<int,int>>& buildings_subseq){
     if(i == n){
-        if(increasing(buildings_subseq) && max_increasing < subseq_width) max_increasing = subseq_width;
-        else if(decreasing(buildings_subseq) && max_decreasing < subseq_width) max_decreasing = subseq_width;
+        if(buildings_subseq.size()==1 || inc){
+            if(subseq_width > max_increasing) max_increasing = subseq_width; 
+        } else if(buildings_subseq.size() ==1 || dec){
+            if(subseq_width > max_decreasing) max_decreasing = subseq_width;
+        }
+    } else if( buildings_subseq.size() == 1){
+        if( buildings[i].second > buildings_subseq.back().second ){
+            buildings.push_back(buildings[i]);
+            skylines(i+1,n,true,false,subseq_width + buildings[i].first ,buildings_subseq); 
+        } else if( buildings[i].second < buildings_subseq.back().second){
+            buildings.push_back(buildings[i]);
+            skylines(i+1,n,false,true,subseq_width + buildings[i].first ,buildings_subseq);
+        } else{
+            skylines(i+1,n,false,false,subseq_width + buildings[i].first ,buildings_subseq);
+        }
+    } else if( buildings_subseq.size() > 1){
+        if(inc && buildings[i].second > buildings_subseq.back().second)
     } else{
         buildings_subseq.push_back(buildings[i]);
 
-        skylines(i+1,n,subseq_width + buildings[i].first ,buildings_subseq);
+        skylines(i+1,n,false,false,subseq_width + buildings[i].first ,buildings_subseq);
 
         buildings_subseq.pop_back();
 
-        skylines(i+1,n,subseq_width,buildings_subseq);
+        skylines(i+1,n,false,false,subseq_width,buildings_subseq);
     }
 }
 
