@@ -5,6 +5,16 @@
 
 using namespace std;
 
+void showVector(vector<string> v){
+    cout<<"(";
+        for (size_t i=0; i<v.size(); i++){
+            if( i!= v.size()-1)  
+                cout << v[i] << ", ";
+            else cout<< v[i] << ")";  
+        }   
+    cout<< endl;
+}
+
 vector<string> sliceVector(size_t x,size_t j,vector<string> v){
     vector<string> r = {};
     for (size_t i = x; i< j; i++){
@@ -12,20 +22,6 @@ vector<string> sliceVector(size_t x,size_t j,vector<string> v){
     }
     sort(r.begin(),r.end());
     return r;
-}
-
-bool compareFunction(tuple<string,int,int> x,tuple<string,int,int> y){
-    return get<0>(x) < get<0>(y);
-}
-
-void showPlayers(vector<string>& s){
-    cout<<"(";
-    for (size_t i=0; i<s.size(); i++){
-        if( i!= s.size()-1)  
-             cout << s[i] << ", ";
-        else cout<< s[i] << ") ";  
-    }   
-    cout<< endl;
 }
 
 vector<tuple<string,int,int>> players = {};
@@ -66,7 +62,6 @@ void elegir_jugadores(int k,int j,int sum_parcial, vector<string>& player_sel_pa
 
             if( sum_deffenders > sum_max_deffenders ) {
                 sum_max_deffenders = sum_deffenders;
-
                 players_sel = player_comparar;
             } 
         }
@@ -79,21 +74,15 @@ void elegir_jugadores(int k,int j,int sum_parcial, vector<string>& player_sel_pa
         player_sel_parcial.pop_back();
         map_players[j] = 0;
         elegir_jugadores(k,j+1,sum_parcial,player_sel_parcial);
-    }
+    } 
 }
 
 int main(){
     int t = 0;
     cin>>t;
+    vector<vector<tuple<string,int,int>>> cases = {};
 
-    for (int i = 0; i < t; i++){
-        map_players = vector<int>(10,0);
-        players_sel = {};
-
-        sum_max_attackers = -1;
-        sum_max_deffenders = -1;
-
-        vector<string> sol_parcial = {}; 
+    for (int i = 0; i < t; i++){ 
         players = {};
 
         for (size_t j = 0; j < 10; j++) {
@@ -107,8 +96,22 @@ int main(){
 
             players.push_back(player);
         }
-        
-        sort(players.begin(),players.end(),compareFunction);
+
+        cases.push_back(players);
+    }
+
+    for (size_t i = 0; i < cases.size(); i++){
+        map_players = vector<int>(10,0);
+        players_sel = {};
+
+        sum_max_attackers = -1;
+        sum_max_deffenders = -1;
+
+        vector<string> sol_parcial = {};
+
+        players = cases[i];
+
+        sort(players.begin(),players.end());
 
         elegir_jugadores(0,0,0,sol_parcial);
 
@@ -117,9 +120,8 @@ int main(){
         vector<string> attackers = sliceVector(0,5,players_sel);
         vector<string> deffenders = sliceVector(5,10,players_sel);
 
-        showPlayers(attackers);
-        showPlayers(deffenders);
+        showVector(attackers);    
+        showVector(deffenders); 
     }
-        
-    return 0; 
+    
 }
