@@ -9,81 +9,116 @@
 using namespace std;
 using namespace std::chrono;
 
-vector<pair<int,int>> case_1 = {
-    {50,10},
-    {10,100},
-    {10,50},
-    {15,30},
-    {20,80},
-    {10,10}
+struct building{
+    int width;
+    int heigth;
 };
 
-vector<pair<int,int>> case_2 = {
-    {20,30},
-    {30,20},
-    {40,20},
-    {50,10}
+struct buildingSubseq{
+    int last;
+    int length;
 };
 
-vector<pair<int,int>> case_3 = {
-    {15,80},
-    {25,80},
-    {20,80},
-};
-
-//building = (width,height)
-vector<pair<int,int>> buildings = {};
+vector<building> buildings = {};
 
 int max_increasing = -1;
 int max_decreasing = -1;
+vector<buildingSubseq> mem = {};
 
-int max_width_subseq_inc(int i,int n,int subseq_width,int last){
-    int aux = -1;
-    if(i == n){
-        return subseq_width;
-    } else{
-        if( buildings[i].second > last ){
-             aux = max_width_subseq_inc(i+1,n,subseq_width + buildings[i].first,buildings[i].second);
+buildingSubseq max_inc(int i,int n){
+    if(mem[i].last == -1 && mem[i].length ==-1){
+        if( i == n-1){
+            return mem[i] = {buildings[i].heigth, buildings[i].width};
+        } else{
+            buildingSubseq max = {-1,-1};
+            for (int j = i; j < n-1; j++){
+                buildingSubseq subseq = max_inc(j+1,n);
+                if( buildings[i].heigth < subseq.last ){
+                    
+                    if( max.length < subseq.length + buildings[i].width )
+                        max = {buildings[i].heigth, subseq.length + buildings[i].width};
+
+                } else if( buildings[i].heigth > subseq.last){
+
+                    if( buildings[i].width > subseq.length && buildings[i].width > max.length)
+                        max = {buildings[i].heigth, buildings[i].width};
+                    else if(buildings[i].width < subseq.length && subseq.length > max.length)
+                        max = subseq;
+
+                } else{
+
+                    if( subseq.length > buildings[i].width && subseq.length > max.length )
+                        max = subseq;
+                    else if ( subseq.length < buildings[i].width && buildings[i].width > max.length)
+                        max = {buildings[i].heigth, buildings[i].width};
+
+                }
+            }
+            mem[i] = max;
         }
-        return max(aux,max_width_subseq_inc(i+1,n,subseq_width,last));
+        return mem[i];
     }
+    return mem[i];
 }
 
-int max_width_subseq_dec(int i,int n,int subseq_width,int last){
-    int aux = -1;
-    if(i == n){
-        return subseq_width;
-    } else{
-        if( buildings[i].second < last ){
-             aux = max_width_subseq_dec(i+1,n,subseq_width + buildings[i].first,buildings[i].second);
+buildingSubseq max_dec(int i,int n){
+    if(mem[i].last == -1 && mem[i].length ==-1){
+        if( i == n-1){
+            return mem[i] = {buildings[i].heigth, buildings[i].width};
+        } else{
+            buildingSubseq max = {-1,-1};
+            for (int j = i; j < n-1; j++){
+                buildingSubseq subseq = max_dec(j+1,n);
+                if( buildings[i].heigth > subseq.last ){
+                    
+                    if( max.length <= subseq.length + buildings[i].width )
+                        max = {buildings[i].heigth, subseq.length + buildings[i].width};
+
+                } else if( buildings[i].heigth < subseq.last){
+
+                    if( buildings[i].width > subseq.length && buildings[i].width > max.length)
+                        max = {buildings[i].heigth, buildings[i].width};
+                    else if(buildings[i].width < subseq.length && subseq.length > max.length)
+                        max = subseq;
+
+                } else{
+
+                    if( subseq.length > buildings[i].width && subseq.length > max.length )
+                        max = subseq;
+                    else if ( subseq.length < buildings[i].width && buildings[i].width > max.length)
+                        max = {buildings[i].heigth, buildings[i].width};
+
+                }
+            }
+            mem[i] = max;
         }
-        return max(aux,max_width_subseq_dec(i+1,n,subseq_width,last));
+        return mem[i];
     }
+    return mem[i];
 }
 
 int main(){
-    /*
     int t = 0;
     cin>>t;
 
-    vector<vector<pair<int,int>>> cases(t,vector<pair<int,int>>(0));
+    vector<vector<building>> cases(t,vector<building>(0));
 
     for (int i = 0; i < t; i++){
         int cant_of_buildings = 0;
         cin>>cant_of_buildings;
 
-        buildings = vector<pair<int,int>>(cant_of_buildings,{0,0});
+        buildings = vector<building>(cant_of_buildings,{0,0});
 
         for (int i = 0; i < cant_of_buildings; i++){
             int height = 0;
             cin>>height;
-            buildings[i].second = height;
+            buildings[i].heigth = height;
         }
         
         for (int i = 0; i < cant_of_buildings; i++){
             int width = 0;
             cin>>width;
-            buildings[i].first = width;
+            buildings[i].width = width;
         }
 
         cases[i] = buildings;
@@ -94,21 +129,15 @@ int main(){
         max_increasing = -1;
         max_decreasing = -1;
 
-        max_increasing = max_width_subseq_inc(0,buildings.size(),0,-1);
-        //max_decreasing = max_width_subseq_dec(0,buildings.size(),0,1000000);
+        mem = vector<buildingSubseq>(buildings.size(),{-1,-1});
+        max_increasing = max_inc(0,buildings.size()).length;
+
+        mem = vector<buildingSubseq>(buildings.size(),{-1,-1});
+        max_decreasing = max_dec(0,buildings.size()).length;
     
         if( max_increasing >= max_decreasing )
             cout<<"Case "<<(i+1)<<". Increasing ("<<max_increasing<<"). Decreasing ("<<max_decreasing<<")."<<endl;
         else cout<<"Case "<<(i+1)<<". Decreasing ("<<max_decreasing<<"). Increasing ("<<max_increasing<<")."<<endl;
     }
-    */
-
-   buildings = case_1;
-
-    max_increasing = max_width_subseq_inc(0,buildings.size(),0,-1);
-    max_decreasing = max_width_subseq_dec(0,buildings.size(),0,1000000);
-
-    if( max_increasing >= max_decreasing )
-            cout<<"Case "<<(1)<<". Increasing ("<<max_increasing<<"). Decreasing ("<<max_decreasing<<")."<<endl;
-        else cout<<"Case "<<(1)<<". Decreasing ("<<max_decreasing<<"). Increasing ("<<max_increasing<<")."<<endl;
+    
 }
