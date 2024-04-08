@@ -19,78 +19,78 @@ struct buildingSubseq{
     int length;
 };
 
+vector<building> case_1 = {
+    {50,10},
+    {10,100},
+    {10,50},
+    {15,30},
+    {20,80},
+    {10,10}
+};
+
+vector<building> case_2 = {
+    {20,30},
+    {30,20},
+    {40,20},
+    {50,10}
+};
+
+vector<building> case_3 = {
+    {15,80},
+    {25,80},
+    {20,80},
+};
+
+
 vector<building> buildings = {};
 
 int max_increasing = -1;
 int max_decreasing = -1;
-vector<buildingSubseq> mem = {};
+vector<int> mem = {};
 
-buildingSubseq max_inc(int i,int n){
-    if(mem[i].last == -1 && mem[i].length ==-1){
+int max_inc(int i,int n){
+    if(mem[i] ==-1){
         if( i == n-1){
-            return mem[i] = {buildings[i].heigth, buildings[i].width};
+            return mem[i] = buildings[i].width;
         } else{
-            buildingSubseq max = {-1,-1};
-            for (int j = i; j < n-1; j++){
-                buildingSubseq subseq = max_inc(j+1,n);
-                if( buildings[i].heigth < subseq.last ){
+            int max = -1;
+            for (int j = i+1; j < n; j++){
+                //subsecuencia que contiene a elmento j
+                int sub_seq_width = max_inc(j,n);
+                if( buildings[i].heigth < buildings[j].heigth){
+                    if(max < buildings[i].width + sub_seq_width)
+                        max = buildings[i].width + sub_seq_width;
+                } else max = max{buildings[i],sub_seq_width}
                     
-                    if( max.length < subseq.length + buildings[i].width )
-                        max = {buildings[i].heigth, subseq.length + buildings[i].width};
-
-                } else if( buildings[i].heigth > subseq.last){
-
-                    if( buildings[i].width > subseq.length && buildings[i].width > max.length)
-                        max = {buildings[i].heigth, buildings[i].width};
-                    else if(buildings[i].width < subseq.length && subseq.length > max.length)
-                        max = subseq;
-
-                } else{
-
-                    if( subseq.length > buildings[i].width && subseq.length > max.length )
-                        max = subseq;
-                    else if ( subseq.length < buildings[i].width && buildings[i].width > max.length)
-                        max = {buildings[i].heigth, buildings[i].width};
-
-                }
             }
-            mem[i] = max;
+            if(max == -1) max = buildings[i].width;
+            mem[i] = max; 
         }
         return mem[i];
     }
     return mem[i];
 }
 
-buildingSubseq max_dec(int i,int n){
-    if(mem[i].last == -1 && mem[i].length ==-1){
+int max_dec(int i,int n){
+    if(mem[i] ==-1){
         if( i == n-1){
-            return mem[i] = {buildings[i].heigth, buildings[i].width};
+            return mem[i] = buildings[i].width;
         } else{
-            buildingSubseq max = {-1,-1};
-            for (int j = i; j < n-1; j++){
-                buildingSubseq subseq = max_dec(j+1,n);
-                if( buildings[i].heigth > subseq.last ){
-                    
-                    if( max.length <= subseq.length + buildings[i].width )
-                        max = {buildings[i].heigth, subseq.length + buildings[i].width};
-
-                } else if( buildings[i].heigth < subseq.last){
-
-                    if( buildings[i].width > subseq.length && buildings[i].width > max.length)
-                        max = {buildings[i].heigth, buildings[i].width};
-                    else if(buildings[i].width < subseq.length && subseq.length > max.length)
-                        max = subseq;
-
-                } else{
-
-                    if( subseq.length > buildings[i].width && subseq.length > max.length )
-                        max = subseq;
-                    else if ( subseq.length < buildings[i].width && buildings[i].width > max.length)
-                        max = {buildings[i].heigth, buildings[i].width};
-
+            int max = buildings[i].width;
+            for (int j = i+1; j < n; j++){
+                //subsecuencia que contiene a elmento j
+                int sub_seq_width = max_dec(j,n);
+                if( buildings[i].heigth > buildings[j].heigth){
+                    if(max < buildings[i].width + sub_seq_width)
+                        max = buildings[i].width + sub_seq_width;
+                } if( buildings[i].heigth == buildings[j].heigth ){
+                    if(buildings[i].width > mem[j] && buildings[i].width > max)
+                        max = buildings[i].width;
+                    else if(buildings[i].width < mem[j] && mem[j] > max)
+                        max = mem[j];    
                 }
             }
-            mem[i] = max;
+            mem[i] = max; 
         }
         return mem[i];
     }
@@ -98,6 +98,7 @@ buildingSubseq max_dec(int i,int n){
 }
 
 int main(){
+    /*
     int t = 0;
     cin>>t;
 
@@ -139,5 +140,14 @@ int main(){
             cout<<"Case "<<(i+1)<<". Increasing ("<<max_increasing<<"). Decreasing ("<<max_decreasing<<")."<<endl;
         else cout<<"Case "<<(i+1)<<". Decreasing ("<<max_decreasing<<"). Increasing ("<<max_increasing<<")."<<endl;
     }
-    
+    */
+
+    buildings = case_2;
+    mem = vector<int>(buildings.size(),-1);
+    int max = max_inc(0,buildings.size());
+    cout<<max<<endl;
+    mem = vector<int>(buildings.size(),-1);
+    max = max_dec(0,buildings.size());
+    cout<<max<<endl;
+    return 0;
 }
