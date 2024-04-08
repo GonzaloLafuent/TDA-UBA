@@ -26,7 +26,7 @@ int max_inc(int i,int n){
         if( i == n-1){
             return mem[i] = buildings[i].width;
         } else{
-            int max_width = -1;
+            int max_width = buildings[i].width;
             for (int j = i+1; j < n; j++){
                 //subsecuencia que contiene a elmento j
                 int sub_seq_width = max_inc(j,n);
@@ -34,10 +34,9 @@ int max_inc(int i,int n){
                     if(max_width < buildings[i].width + sub_seq_width)
                         max_width = buildings[i].width + sub_seq_width;
                 } else {
-                    int aux = std::max(buildings[i].width,sub_seq_width);
+                    int aux = std::min(buildings[i].width,sub_seq_width);
                     if( aux > max_width) max_width = aux;
                 }
-                    
             }
             mem[i] = max_width; 
         }
