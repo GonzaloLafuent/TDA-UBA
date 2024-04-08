@@ -5,6 +5,7 @@
 #include <chrono>
 #include <thread>
 #include <limits>
+#include <algorithm>
 
 using namespace std;
 using namespace std::chrono;
@@ -13,34 +14,6 @@ struct building{
     int width;
     int heigth;
 };
-
-struct buildingSubseq{
-    int last;
-    int length;
-};
-
-vector<building> case_1 = {
-    {50,10},
-    {10,100},
-    {10,50},
-    {15,30},
-    {20,80},
-    {10,10}
-};
-
-vector<building> case_2 = {
-    {20,30},
-    {30,20},
-    {40,20},
-    {50,10}
-};
-
-vector<building> case_3 = {
-    {15,80},
-    {25,80},
-    {20,80},
-};
-
 
 vector<building> buildings = {};
 
@@ -53,18 +26,20 @@ int max_inc(int i,int n){
         if( i == n-1){
             return mem[i] = buildings[i].width;
         } else{
-            int max = -1;
+            int max_width = -1;
             for (int j = i+1; j < n; j++){
                 //subsecuencia que contiene a elmento j
                 int sub_seq_width = max_inc(j,n);
                 if( buildings[i].heigth < buildings[j].heigth){
-                    if(max < buildings[i].width + sub_seq_width)
-                        max = buildings[i].width + sub_seq_width;
-                } else max = max{buildings[i],sub_seq_width}
+                    if(max_width < buildings[i].width + sub_seq_width)
+                        max_width = buildings[i].width + sub_seq_width;
+                } else {
+                    int aux = std::max(buildings[i].width,sub_seq_width);
+                    if( aux > max_width) max_width = aux;
+                }
                     
             }
-            if(max == -1) max = buildings[i].width;
-            mem[i] = max; 
+            mem[i] = max_width; 
         }
         return mem[i];
     }
@@ -76,21 +51,19 @@ int max_dec(int i,int n){
         if( i == n-1){
             return mem[i] = buildings[i].width;
         } else{
-            int max = buildings[i].width;
+            int max_width = buildings[i].width;
             for (int j = i+1; j < n; j++){
                 //subsecuencia que contiene a elmento j
                 int sub_seq_width = max_dec(j,n);
                 if( buildings[i].heigth > buildings[j].heigth){
-                    if(max < buildings[i].width + sub_seq_width)
-                        max = buildings[i].width + sub_seq_width;
-                } if( buildings[i].heigth == buildings[j].heigth ){
-                    if(buildings[i].width > mem[j] && buildings[i].width > max)
-                        max = buildings[i].width;
-                    else if(buildings[i].width < mem[j] && mem[j] > max)
-                        max = mem[j];    
+                    if(max_width < buildings[i].width + sub_seq_width)
+                        max_width = buildings[i].width + sub_seq_width;
+                } else {
+                    int aux = std::max(buildings[i].width,sub_seq_width);
+                    if( aux > max_width) max_width = aux;
                 }
             }
-            mem[i] = max; 
+            mem[i] = max_width; 
         }
         return mem[i];
     }
@@ -98,7 +71,6 @@ int max_dec(int i,int n){
 }
 
 int main(){
-    /*
     int t = 0;
     cin>>t;
 
@@ -130,24 +102,14 @@ int main(){
         max_increasing = -1;
         max_decreasing = -1;
 
-        mem = vector<buildingSubseq>(buildings.size(),{-1,-1});
-        max_increasing = max_inc(0,buildings.size()).length;
-
-        mem = vector<buildingSubseq>(buildings.size(),{-1,-1});
-        max_decreasing = max_dec(0,buildings.size()).length;
+       mem = vector<int>(buildings.size(),-1);
+       max_increasing = max_inc(0,buildings.size());
+       mem = vector<int>(buildings.size(),-1);
+       max_decreasing = max_dec(0,buildings.size());
     
         if( max_increasing >= max_decreasing )
             cout<<"Case "<<(i+1)<<". Increasing ("<<max_increasing<<"). Decreasing ("<<max_decreasing<<")."<<endl;
         else cout<<"Case "<<(i+1)<<". Decreasing ("<<max_decreasing<<"). Increasing ("<<max_increasing<<")."<<endl;
     }
-    */
 
-    buildings = case_2;
-    mem = vector<int>(buildings.size(),-1);
-    int max = max_inc(0,buildings.size());
-    cout<<max<<endl;
-    mem = vector<int>(buildings.size(),-1);
-    max = max_dec(0,buildings.size());
-    cout<<max<<endl;
-    return 0;
 }
