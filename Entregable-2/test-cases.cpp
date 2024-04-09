@@ -4,6 +4,11 @@
 
 using namespace std;
 
+struct building{
+    int width;
+    int heigth;
+};
+
 vector<building> case_1 = {
     {50,10},
     {10,100},

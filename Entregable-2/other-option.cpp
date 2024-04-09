@@ -24,6 +24,7 @@ vector<int> mem = {};
 int max_inc(int i,int n){
     if(mem[i] ==-1){
         if( i == n-1){
+            max_increasing = buildings[i].width; 
             return mem[i] = buildings[i].width;
         } else{
             int max_width = buildings[i].width;
@@ -33,11 +34,9 @@ int max_inc(int i,int n){
                 if( buildings[i].heigth < buildings[j].heigth){
                     if(max_width < buildings[i].width + sub_seq_width)
                         max_width = buildings[i].width + sub_seq_width;
-                } else {
-                    int aux = std::min(buildings[i].width,sub_seq_width);
-                    if( aux > max_width) max_width = aux;
-                }
+                } 
             }
+            max_increasing = (max_width > max_increasing)? max_width : max_increasing;
             mem[i] = max_width; 
         }
         return mem[i];
@@ -48,6 +47,7 @@ int max_inc(int i,int n){
 int max_dec(int i,int n){
     if(mem[i] ==-1){
         if( i == n-1){
+            max_decreasing = buildings[i].width;
             return mem[i] = buildings[i].width;
         } else{
             int max_width = buildings[i].width;
@@ -57,11 +57,9 @@ int max_dec(int i,int n){
                 if( buildings[i].heigth > buildings[j].heigth){
                     if(max_width < buildings[i].width + sub_seq_width)
                         max_width = buildings[i].width + sub_seq_width;
-                } else {
-                    int aux = std::max(buildings[i].width,sub_seq_width);
-                    if( aux > max_width) max_width = aux;
-                }
+                } 
             }
+            max_decreasing = (max_width > max_decreasing)? max_width : max_decreasing;
             mem[i] = max_width; 
         }
         return mem[i];
@@ -102,9 +100,9 @@ int main(){
         max_decreasing = -1;
 
        mem = vector<int>(buildings.size(),-1);
-       max_increasing = max_inc(0,buildings.size());
+       max_inc(0,buildings.size());
        mem = vector<int>(buildings.size(),-1);
-       max_decreasing = max_dec(0,buildings.size());
+       max_dec(0,buildings.size());
     
         if( max_increasing >= max_decreasing )
             cout<<"Case "<<(i+1)<<". Increasing ("<<max_increasing<<"). Decreasing ("<<max_decreasing<<")."<<endl;
