@@ -9,6 +9,7 @@ int f = 0;
 int t = 0;
 int h = 0;
 
+
 vector<vector<int>> test1 = {
     {1,0,0},
     {0,2,1},
@@ -21,17 +22,10 @@ vector<vector<int>> test1 = {
     {0,0,0},
     {1,0,0},
 };
- 
-vector<vector<int>> test2 = {
-    {1,0,0},
-    {0,2,1},
-    {0,1,0},
-    {0,1,0},
-};
 
 vector<vector<int>> accorns = {};
 
-vector<vector<int>> mem(t,vector<int>(h,-1));
+vector<vector<int>> mem = {};
 
 int max_accorns(int i,int j){
     int acc = 0;
@@ -79,21 +73,49 @@ int jayjay(){
     return cant_accorns;
 }
 
-int main(){
-    f = 2;
-    t = 3;
-    h = 10;
-    accorns = test1;
+int main(){    
+    vector<vector<int>> test = {};
+    int testCases = 0;
+    cin >> testCases;
+    for (int case_n = 0; case_n < testCases; ++case_n) {
+        cin >> t >> h >> f;
+        mem = vector<vector<int>>(h,vector<int>(t,-1));
+        test = vector<vector<int>>(h,vector<int>(t,0));
+        int acorns_n;
+        int height;
+        for (int counter_t = 0; counter_t < t; ++counter_t) {
+            cin >> acorns_n;
+            while(acorns_n--){
+                cin >> height;
+                test[counter_t][h-height] += 1;
+            }
+        }
+    }
 
-    mem = vector<vector<int>>(h,vector<int>(t,-1));    
+    for (size_t i = 0; i < test.size(); i++){
+        for (size_t j = 0; j < test[0].size(); j++){
+            cout<<test[i][j]<<" ";
+        }
+        cout<<endl;
+    }
 
-    cout<<mem.size()<<":"<<mem[0].size()<<endl;
+    cout<<endl;
 
-    auto start = high_resolution_clock::now();
-    int max = max_accorns(0,0);
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(stop - start);
-    cout<<"Resultado jay jay: "<<max<<endl;
-    cout<<"Tiempo: "<<duration.count()<<endl;
+    for (size_t i = 0; i < test1.size(); i++){
+        for (size_t j = 0; j < test1[0].size(); j++){
+            cout<<test1[i][j]<<" ";
+        }
+        cout<<endl;
+    }
+
+    cout<<endl;
+
+    for (size_t i = 0; i < mem.size(); i++){
+        for (size_t j = 0; j < mem[0].size(); j++){
+            cout<<mem[i][j]<<" ";
+        }
+        cout<<endl;
+    }
+
     return 0;
 }

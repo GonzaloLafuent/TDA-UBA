@@ -70,11 +70,56 @@ int max_accorns_sin_memo(int i,int j){
 }
 
 int main(){
+    f = 2;
+    t = 3;
+    h = 10;
+    accorns = test1;
+
     auto start = high_resolution_clock::now();
     int max = max_accorns_sin_memo(0,0);
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
     cout<<"Resultado jay jay: "<<max<<endl;
     cout<<"Tiempo: "<<duration.count()<<endl;
+
+    int testCases;
+
+    cin >> testCases;
+    for (int case_n = 0; case_n < testCases; ++case_n) {
+        cin >> t >> h >> f;
+        acorns_map.assign(t+1,vector<int>(h,0));
+        int acorns_n;
+        int height;
+        for (int counter_t = 0; counter_t < t; ++counter_t) {
+            cin >> acorns_n;
+            while(acorns_n--){
+                cin >> height;
+                acorns_map[counter_t][height-1] += 1;
+            }
+        }
+	// resuelvo cosas bottom up
+
+    /*
+    for (int i = 0; i < cant_cases; i++){
+        cin>>t>>h>>f;
+
+        test_values.push_back({t,h,f});
+
+        int cant_accorns = 0;
+        int pos_accorn = 0;
+        vector<vector<int>> test = vector<vector<int>>(t,vector<int>(h,0));
+        for(int j = 0; j < t; j++){
+            cin>>cant_accorns;
+            for(int k = 0; k < cant_accorns; k++){
+                cin>>pos_accorn;
+                test[j][h-pos_accorn] = 1;
+            }             
+        }
+        tests.push_back(test);
+    }
+    */
+
+    int z;
+    cin >> z;
     return 0;
 }
