@@ -74,47 +74,43 @@ int jayjay(){
 }
 
 int main(){    
-    vector<vector<int>> test = {};
-    int testCases = 0;
-    cin >> testCases;
-    for (int case_n = 0; case_n < testCases; ++case_n) {
+    int cant_cases = 0;
+    int fin = 0;
+
+    vector<vector<vector<int>>> tests = {};
+    vector<vector<int>> test_values = {};
+
+    cin >> cant_cases;
+
+    for (int i = 0; i < cant_cases; i++) {
         cin >> t >> h >> f;
-        mem = vector<vector<int>>(h,vector<int>(t,-1));
-        test = vector<vector<int>>(h,vector<int>(t,0));
-        int acorns_n;
-        int height;
-        for (int counter_t = 0; counter_t < t; ++counter_t) {
-            cin >> acorns_n;
-            while(acorns_n--){
-                cin >> height;
-                test[counter_t][h-height] += 1;
+        test_values.push_back({t,h,f});
+        vector<vector<int>> test = vector<vector<int>>(h,vector<int>(t,0));
+
+        for (int j = 0; j < t; j++) {
+            int cant_accorns = 0;
+            int pos_accorns = 0;
+            cin >> cant_accorns;
+            for (int k = 0; k < cant_accorns; k++){
+                cin >> pos_accorns;
+                test[h-pos_accorns][j] += 1;
             }
         }
+        tests.push_back(test);
     }
 
-    for (size_t i = 0; i < test.size(); i++){
-        for (size_t j = 0; j < test[0].size(); j++){
-            cout<<test[i][j]<<" ";
-        }
-        cout<<endl;
-    }
+    cin>>fin;
 
-    cout<<endl;
+    for (size_t i = 0; i < tests.size(); i++){
+        accorns = tests[i];
+        t = test_values[i][0];
+        h = test_values[i][1]; 
+        f = test_values[i][2];
 
-    for (size_t i = 0; i < test1.size(); i++){
-        for (size_t j = 0; j < test1[0].size(); j++){
-            cout<<test1[i][j]<<" ";
-        }
-        cout<<endl;
-    }
+        mem = vector<vector<int>>(h,vector<int>(t,-1));
+        int max = jayjay();
 
-    cout<<endl;
-
-    for (size_t i = 0; i < mem.size(); i++){
-        for (size_t j = 0; j < mem[0].size(); j++){
-            cout<<mem[i][j]<<" ";
-        }
-        cout<<endl;
+        cout<<max<<endl;
     }
 
     return 0;
