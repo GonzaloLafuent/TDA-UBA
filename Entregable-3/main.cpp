@@ -1,27 +1,11 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <chrono>
 using namespace std;
-using namespace std::chrono;
 
 int f = 0;
 int t = 0;
 int h = 0;
-
-
-vector<vector<int>> test1 = {
-    {1,0,0},
-    {0,2,1},
-    {0,1,0},
-    {0,1,0},
-    {0,0,1},
-    {0,1,1},
-    {1,0,1},
-    {0,1,1},
-    {0,0,0},
-    {1,0,0},
-};
 
 vector<vector<int>> accorns = {};
 
@@ -108,7 +92,8 @@ int main(){
         f = test_values[i][2];
 
         mem = vector<vector<int>>(h,vector<int>(t,-1));
-        int max = jayjay();
+        int max = 0;
+        max = jayjay();
 
         cout<<max<<endl;
     }
