@@ -1,34 +1,35 @@
 #include <iostream>
 using namespace std;
 
+string a = "aaba";
+string b = "abaa";
 
-bool equivalente(string a,string b,int n){
-    if( a == b ) return true; 
-    if(a.length() % 2 != 0 || b.length() % 2 != 0) return false;
+//Usar los strings como arrays de chars
 
-    string a1 = a.substr(0,n/2);
-    string a2 = a.substr(n/2);
+bool equivalente(int inicio_a,int fin_a,int inicio_b,int fin_b){
+    int tamañoString = (fin_a - inicio_a) + 1;
+    int medio = tamañoString / 2;
 
-    string b1 = b.substr(0,n/2);
-    string b2 = b.substr(n/2);
-
-    int m = a1.length();
-
-    return (equivalente(a1,b1,m) && equivalente(a2,b2,m)) || (equivalente(a1,b2,m) && equivalente(a2,b1,m));        
+    if(tamañoString == 1) return a[fin_a] == b[fin_b];
+    else if (tamañoString % 2 == 0 ){
+        return (equivalente(inicio_a, medio-1, inicio_b, medio-1) && 
+                equivalente(medio-1, fin_a, medio-1, fin_b)) 
+                                || 
+                (equivalente(inicio_a,medio-1,medio-1,fin_b) && 
+                 equivalente(medio-1,fin_a,inicio_b,medio-1));
+    } else return a.substr(inicio_a,fin_a) == b.substr(inicio_b,fin_a);
 }
 
 
 int main(){
-    string a = "";
-    string b = "";
-
-    cin>>a;
-    cin>>b;
+    //cin>>a;
+    //cin>>b;
 
     int n = a.length();
 
-    if(equivalente(a,b,n))
+    if( a == b || equivalente(0,n-1,0,n-1))
         cout<<"YES"<<endl;
     else cout<<"NO"<<endl;
+
     return 0;
 }
