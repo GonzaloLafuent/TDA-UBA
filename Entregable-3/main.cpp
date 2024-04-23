@@ -13,35 +13,27 @@ vector<vector<int>> mem = {};
 
 int max_accorns(int i,int j){
     int acc = 0;
-    if( i >= h ) return 0;
-    if( j >= t) return 0;
-    if( i == h-1 && j<t) return accorns[i][j];
     if( mem[i][j] == -1){
-        if( j == t-1 ){
+        if( i == h-1 && j<t) return mem[i][j] = accorns[i][j];
+        else if( j == t-1 ){
             //Caso ultimo arbol
             acc = max_accorns(i+1,j);
-            for (int k = j-1; k >= 0; k--){
-                int sum = 0;
-                sum = max_accorns(i+f,k);
-                acc = max(acc,sum);
+            for(int k= j-1; k>=0; k--){
+                acc = max(acc, (i+f < h)? max_accorns(i+f,k):0 );
             }
             mem[i][j] = acc + accorns[i][j];
         } else if ( j == 0){
             //Caso primer arbol
             acc = max_accorns(i+1,j);
-            for (int k = 1; k < t; k++){
-                int sum = 0;
-                sum = max_accorns(i+f,k);
-                acc = max(sum,acc);    
+            for(int k = 1; k <t ; k++){
+                acc = max(acc, ( i+f < h)? max_accorns(i+f,k):0);    
             }
             mem[i][j] = acc + accorns[i][j];
         } else{
             acc = max_accorns(i+1,j);
-            for (int k = 0; k < t; k++){
-                int sum = 0;
+            for(int k = 0; k < t ;k++){
                 if( k!=j )
-                    sum = max_accorns(i+f,k);
-                acc = max(acc,sum);
+                    acc = max(acc, (i+f < h)?max_accorns(i+f,k):0 );
             }
             mem[i][j] = acc + accorns[i][j];
         }
@@ -50,7 +42,7 @@ int max_accorns(int i,int j){
 }
 
 int jayjay(){
-    int cant_accorns = max_accorns(0,0);
+    int cant_accorns = -1;
     for(int i = 0; i<t; i++){
         cant_accorns = max(cant_accorns,max_accorns(0,i));
     }
@@ -61,14 +53,11 @@ int main(){
     int cant_cases = 0;
     int fin = 0;
 
-    vector<vector<vector<int>>> tests = {};
-    vector<vector<int>> test_values = {};
-
     cin >> cant_cases;
 
     for (int i = 0; i < cant_cases; i++) {
         cin >> t >> h >> f;
-        test_values.push_back({t,h,f});
+        
         vector<vector<int>> test = vector<vector<int>>(h,vector<int>(t,0));
 
         for (int j = 0; j < t; j++) {
@@ -80,23 +69,13 @@ int main(){
                 test[h-pos_accorns][j] += 1;
             }
         }
-        tests.push_back(test);
+        accorns = test;
+        mem = vector<vector<int>>(h,vector<int>(t,-1));    
+        int max = jayjay();
+        cout<<max<<endl;
     }
 
     cin>>fin;
-
-    for (size_t i = 0; i < tests.size(); i++){
-        accorns = tests[i];
-        t = test_values[i][0];
-        h = test_values[i][1]; 
-        f = test_values[i][2];
-
-        mem = vector<vector<int>>(h,vector<int>(t,-1));
-        int max = 0;
-        max = jayjay();
-
-        cout<<max<<endl;
-    }
 
     return 0;
 }
