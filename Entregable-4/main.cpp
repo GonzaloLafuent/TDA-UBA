@@ -1,20 +1,20 @@
 #include <iostream>
 using namespace std;
 
-string a = "aaba";
-string b = "abaa";
-
-//Usar los strings como arrays de chars
+string a = "";
+string b = "";
 
 bool equivalente(int ia,int fa,int ib,int fb,int n){
-    int medio = n / 2;
     bool equiv = false;
     if(n==1){
-        equiv = 
+        equiv = a[fa] == b[fb];
     } else if( n%2 == 0){
-        equiv = 
+        // equiv = (a1==b1 && a2==b2) || (a1==b2 && b1==a2)
+        int medio = (fa + ia) / 2;
+        equiv = ( equivalente(ia,medio,ib,medio,n/2) && equivalente(medio+1,fa,medio+1,fb,n/2) ) 
+                || ( equivalente(ia,medio,medio+1,fb,n/2) && equivalente(medio+1,fa,ib,medio,n/2) );
     } else if( n%2 !=0){
-        equiv = a.substr(ia,fa+1) == b.substr(ib,fb+1);
+        equiv = a.substr(ia,n) == b.substr(ib,n);
     }
     return equiv;
 }
