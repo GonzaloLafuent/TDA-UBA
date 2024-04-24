@@ -4,7 +4,7 @@ using namespace std;
 
 bool equivalente(string &a,string &b,int n){
     if( a == b ) return true; 
-    if(a.length() % 2 != 0 ) return false;
+    if(a.length() % 2 != 0 ) return ;
 
     string a1 = a.substr(0,n/2);
     string a2 = a.substr(n/2);
