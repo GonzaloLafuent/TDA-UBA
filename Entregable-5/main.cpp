@@ -4,13 +4,14 @@ using namespace std;
 
 vector<int> ciudad = {};
 
-int gergovia(){
-    int esfuerzo = 0;
+void gergovia(){
+    long esfuerzo = 0;
+
     for (size_t i = 0; i < ciudad.size()-1; i++){
         esfuerzo += abs(ciudad[i]);
         ciudad[i+1] += ciudad[i];
     }
-    return esfuerzo;
+    cout<<esfuerzo<<endl;
 }
 
 
@@ -27,7 +28,7 @@ int main(){
             test.push_back(vino);
         }
         ciudad = test;
-        cout<<gergovia()<<endl;
+        gergovia();
 
         cin>>n;
     }
