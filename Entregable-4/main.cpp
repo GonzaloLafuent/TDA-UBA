@@ -4,19 +4,16 @@ using namespace std;
 string a = "";
 string b = "";
 
-bool equivalente(int ia,int fa,int ib,int fb,int n){
-    bool equiv = false;
+bool equivalente(int ia,int ib,int n){
     if(n==1){
-        equiv = a[fa] == b[fb];
+        return a[ia] == b[ib];
     } else if( n%2 == 0){
-        // equiv = (a1==b1 && a2==b2) || (a1==b2 && b1==a2)
-        int medio = (fa + ia) / 2;
-        equiv = ( equivalente(ia,medio,ib,medio,n/2) && equivalente(medio+1,fa,medio+1,fb,n/2) ) 
-                || ( equivalente(ia,medio,medio+1,fb,n/2) && equivalente(medio+1,fa,ib,medio,n/2) );
-    } else if( n%2 !=0){
-        equiv = a.substr(ia,n) == b.substr(ib,n);
+        int medio = n/2;
+        return (equivalente(ia,ib,medio) && equivalente(ia + medio,ib + medio,medio)) || (equivalente(ia,ib + medio,medio) && equivalente(ia + medio,ib,medio));
+    } else {
+        return a.substr(ia,n) == b.substr(ib,n);
     }
-    return equiv;
+    return false;
 }
 
 
@@ -26,7 +23,7 @@ int main(){
 
     int n = a.length();
 
-    if( a == b || equivalente(0,n-1,0,n-1,n))
+    if( a == b || equivalente(0,0,n))
         cout<<"YES"<<endl;
     else cout<<"NO"<<endl;
 
