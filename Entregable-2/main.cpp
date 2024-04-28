@@ -15,27 +15,34 @@ struct building{
     int heigth;
 };
 
+//Mentengo los edificios de mis casos de prueba
 vector<building> buildings = {};
 
+//Longtud de la mayor secuencia creciente y decreciente
 int max_increasing = -1;
 int max_decreasing = -1;
+
+//Estructura de memorizacion
 vector<int> mem = {};
 
 int max_inc(int i,int n){
     if(mem[i] ==-1){
         if( i == n-1){
+            //recorri todos los edificios
             max_increasing = buildings[i].width; 
             return mem[i] = buildings[i].width;
         } else{
             int max_width = buildings[i].width;
             for (int j = i+1; j < n; j++){
-                //subsecuencia que contiene a elmento j
+                //Calculo la maxima subsecuencia posible que contiene al edificio j
                 int sub_seq_width = max_inc(j,n);
                 if( buildings[i].heigth < buildings[j].heigth){
                     if(max_width < buildings[i].width + sub_seq_width)
                         max_width = buildings[i].width + sub_seq_width;
                 } 
             }
+            //Si la maxima subsecuencia que contiene al edificio j es mayor a 
+            //la mayor subsecuencia que tenia hasta ahora la reemplazo
             max_increasing = (max_width > max_increasing)? max_width : max_increasing;
             mem[i] = max_width; 
         }
@@ -47,18 +54,21 @@ int max_inc(int i,int n){
 int max_dec(int i,int n){
     if(mem[i] ==-1){
         if( i == n-1){
+            //recorri todos los edificios
             max_decreasing = buildings[i].width;
             return mem[i] = buildings[i].width;
         } else{
             int max_width = buildings[i].width;
             for (int j = i+1; j < n; j++){
-                //subsecuencia que contiene a elmento j
+                //Calculo la maxima subsecuencia posible que contiene al edificio j
                 int sub_seq_width = max_dec(j,n);
                 if( buildings[i].heigth > buildings[j].heigth){
                     if(max_width < buildings[i].width + sub_seq_width)
                         max_width = buildings[i].width + sub_seq_width;
                 } 
             }
+            //Si la maxima subsecuencia que contiene al edificio j es mayor a 
+            //la mayor subsecuencia que tenia hasta ahora la reemplazo
             max_decreasing = (max_width > max_decreasing)? max_width : max_decreasing;
             mem[i] = max_width; 
         }
