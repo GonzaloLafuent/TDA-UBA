@@ -2,11 +2,12 @@
 #include <vector>
 using namespace std;
 
+//ciudad = contiene los distintas demandas y ofertas de vino
 vector<int> ciudad = {};
 
 void gergovia(){
     long esfuerzo = 0;
-
+    
     for (size_t i = 0; i < ciudad.size()-1; i++){
         esfuerzo += abs(ciudad[i]);
         ciudad[i+1] += ciudad[i];
