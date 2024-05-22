@@ -7,10 +7,26 @@ int f = 0;
 int t = 0;
 int h = 0;
 
-vector<vector<int>> accorns = {};
+vector<vector<int>> test1 = {
+    {1,0,0},
+    {0,2,1},
+    {0,1,0},
+    {0,1,0},
+    {0,0,1},
+    {0,1,1},
+    {1,0,1},
+    {0,1,1},
+    {0,0,0},
+    {1,0,0},
+};
+
+vector<vector<int>> accorns = test1;
+
+vector<int> max_altura = {}; 
 
 vector<vector<int>> mem = {};
 
+/*
 int max_accorns(int i,int j){
     int acc = 0;
     if( mem[i][j] == -1){
@@ -40,7 +56,25 @@ int max_accorns(int i,int j){
     } 
     return mem[i][j];
 }
+*/
 
+void max_accorns(){
+    for (size_t j = 0; j < accorns[0].size(); j++) {
+        mem[h-1][j] = accorns[h-1][j];
+        max_altura[h-1] = max(max_altura[h-1],mem[h-1][j]);
+    }
+
+    for(int i = h-2; i>=0; i--){
+        for(int j = 0; j < accorns[0].size(); j++){
+            if( i + f < h ) {
+                mem[i][j] = max(max_altura[i+f],mem[i+1][j]) + accorns[i][j];
+            } else mem[i][j] = mem[i+1][j] + accorns[i][j];
+            max_altura[i] = max(max_altura[i],mem[i][j]);
+        }
+    }
+}
+
+/*
 int jayjay(){
     int cant_accorns = -1;
     for(int i = 0; i<t; i++){
@@ -48,8 +82,11 @@ int jayjay(){
     }
     return cant_accorns;
 }
+*/
+
 
 int main(){    
+    /*
     int cant_cases = 0;
     int fin = 0;
 
@@ -70,12 +107,23 @@ int main(){
             }
         }
         accorns = test;
-        mem = vector<vector<int>>(h,vector<int>(t,-1));    
+        mem = vector<vector<int>>(h,vector<int>(t,-1)); 
+        max_altura = vector<int>(h,0);   
         int max = jayjay();
         cout<<max<<endl;
     }
 
     cin>>fin;
+    */
 
+    f = 2;
+    h = 10;
+    t = 3;
+
+    mem = vector<vector<int>>(h,vector<int>(t,0)); 
+    max_altura = vector<int>(h,0);
+
+    max_accorns();
+    cout<<max_altura[0];
     return 0;
 }
