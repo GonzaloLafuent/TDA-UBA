@@ -1,58 +1,52 @@
 #include "vector"
 #include "iostream"
 #include "queue"
+#include "algorithm"
 
 using namespace std;
 
 //Implementacion de Edge
-template<typename p>
 struct edge{
     int id_src;
     int id_dst;
-    p weight;
+    int weight;
 };
 
 //Implementacion de Grafo
-template<typename p>
 class Graph {
     private:
-        vector<vector<edge<p>>> adjacencies;
-        vector<edge<p>> edges;
+        vector<vector<edge>> adjacencies;
+        vector<edge> edges;
         int cant_nodes;    
     public:
         Graph(int n);   
-        void addEdge(int id_src,int id_dst,p weight);
+        void addEdge(int id_src,int id_dst,int weight);
         int getCantNodes();
-        vector<edge<p>> getNeighborhood(int id);
-        vector<edge<p>> getEdges();
+        vector<edge> getNeighborhood(int id);
+        vector<edge> getEdges();
 };
 
-template <typename p>
-Graph<p>::Graph(int n){
-    adjacencies = vector<vector<edge<p>>>(n,vector<edge<p>> {});
+Graph::Graph(int n){
+    adjacencies = vector<vector<edge>>(n, vector<edge> {});
     edges = {};
     cant_nodes = n;
 }
 
-template <typename p>
-int Graph<p>::getCantNodes(){
+int Graph::getCantNodes(){
     return cant_nodes;
 }
 
-template <typename p>
-vector<edge<p>> Graph<p>::getEdges(){
+vector<edge> Graph::getEdges(){
     return edges;
 }
 
-template<typename p>
-vector<edge<p>> Graph<p>::getNeighborhood(int id){
+vector<edge> Graph::getNeighborhood(int id){
     return adjacencies[id];
 }
 
-template <typename p>
-void Graph<p>::addEdge(int id_src, int id_dst,p weight){
-    edge<p> e1 = {id_src,id_dst,weight};
-    edge<p> e2 = {id_dst,id_src,weight};
+void Graph::addEdge(int id_src, int id_dst,int weight){
+    edge e1 = {id_src,id_dst,weight};
+    edge e2 = {id_dst,id_src,weight};
     adjacencies[id_src].push_back(e1);
     adjacencies[id_dst].push_back(e2);
     edges.push_back(e1);
@@ -83,7 +77,9 @@ void DsjointSet::makeSet(int v){
 int DsjointSet::findSet(int v){
     if(v == parent[v])
         return v;
-    return parent[v] == findSet(parent[v]);
+    int result = findSet(parent[v]);  
+    parent[v] = result;  
+    return result; 
 
 }
 
@@ -98,17 +94,38 @@ void DsjointSet::unionSet(int v,int w){
     }     
 }
 
-
-
-template <typename p>
-void printEdges(vector<edge<p>> edges,vector<string> nodes){
-    for (edge<p> e: edges){
-        cout<<"Src: "<<nodes[e.id_src]<<" Dst: "<<nodes[e.id_dst]<<" W: "<<e.weight<<endl;   
-    }
+bool compareEdge(edge x,edge y){
+    return x.weight < y.weight;
 }
 
-template <typename p> 
-void bfs(Graph<p> g,int root,vector<string> nodes){
+vector<edge> kruskal(Graph g){
+    DsjointSet set {g.getCantNodes()};
+    vector<edge> a = {};
+    for(int i=0; i<g.getCantNodes(); i++){
+        set.makeSet(i);
+    }
+    vector<edge> edges = g.getEdges();
+    sort(edges.begin(),edges.end(),compareEdge);
+
+    for(edge e:edges){
+        int u = e.id_src;
+        int v = e.id_dst;
+        if(set.findSet(u)!=set.findSet(v)){
+            a.push_back(e);
+            set.unionSet(u,v);
+        }
+    }
+    
+    return a;
+}
+
+void printEdges(vector<edge> edges,vector<string> nodes){
+    for (edge e: edges){
+        cout<<"("<<nodes[e.id_src]<<" ,"<<nodes[e.id_dst]<<") W: "<<e.weight<<endl;   
+    }
+}
+ 
+void bfs(Graph g,int root,vector<string> nodes){
     queue<int> a_visitar = {};
     vector<bool> visitados(g.getCantNodes(),false); 
     a_visitar.push(root);
@@ -118,7 +135,7 @@ void bfs(Graph<p> g,int root,vector<string> nodes){
         int actual = a_visitar.front();
         a_visitar.pop();
         cout<<nodes[actual]<<endl;
-        for (edge<p> v: g.getNeighborhood(actual)){
+        for (edge v: g.getNeighborhood(actual)){
             if( !visitados[v.id_dst] ){
                 a_visitar.push(v.id_dst);
                 visitados[v.id_dst] = true;
@@ -129,15 +146,69 @@ void bfs(Graph<p> g,int root,vector<string> nodes){
 }
 
 int main(){
-    vector<string> nodes = {"bs as","mdq","tandil","bahia"};
-    Graph<int> g {4};
-    g.addEdge(0,1,6);
-    g.addEdge(0,3,12);
-    g.addEdge(1,2,13);
-    vector<edge<int>> edges = g.getEdges();
+    vector<string> nodes = {"a","b","c","d","e","f","g","h","i"};
+    Graph g {9};
+    
+    g.addEdge(0,1,4);
+    g.addEdge(0,7,8);
+    g.addEdge(1,7,12);
+    g.addEdge(1,2,8);
+    g.addEdge(2,8,3);
+    g.addEdge(2,5,4);
+    g.addEdge(2,3,6);
+    g.addEdge(3,4,9);
+    g.addEdge(3,5,13);
+    g.addEdge(4,5,10);
+    g.addEdge(5,6,3);
+    g.addEdge(6,7,1);
+    g.addEdge(6,8,5);
+    g.addEdge(7,8,6);
+
+    cout<<"Grago g: "<<endl;
+    vector<edge> edges = g.getEdges();
+    sort(edges.begin(),edges.end(),compareEdge);
     printEdges(edges,nodes);
 
-    bfs(g,0,nodes);
+    vector<edge> a =  kruskal(g);
 
+    cout<<""<<endl;
+    cout<<"AGM de g: "<<endl;
+    printEdges(a,nodes);
+    cout<<""<<endl;
+
+    Graph g1 {12};
+    vector<string> nodes1 = {"1","2","3","4","5","6","7","8","9","10","11","12"};
+    g1.addEdge(0,1,10);
+    g1.addEdge(0,7,11);
+    g1.addEdge(0,10,9);
+    g1.addEdge(0,11,12);
+    g1.addEdge(1,7,8);
+    g1.addEdge(1,2,8);
+    g1.addEdge(2,11,10);
+    g1.addEdge(2,6,8);
+    g1.addEdge(2,3,6);
+    g1.addEdge(3,4,10);
+    g1.addEdge(3,5,7);
+    g1.addEdge(4,6,5);
+    g1.addEdge(4,5,7);
+    g1.addEdge(5,9,6);
+    g1.addEdge(5,8,13);
+    g1.addEdge(6,7,8);
+    g1.addEdge(6,9,5);
+    g1.addEdge(7,8,9);
+    g1.addEdge(9,10,11);
+    g1.addEdge(10,11,8);
+
+    cout<<"Grago g1: "<<endl;
+    edges = g1.getEdges();
+    sort(edges.begin(),edges.end(),compareEdge);
+    printEdges(edges,nodes1);
+
+    a =  kruskal(g1);
+
+    cout<<""<<endl;
+    cout<<"AGM de g: "<<endl;
+    printEdges(a,nodes1);
+   
     return 0;
 }
