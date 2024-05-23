@@ -60,11 +60,44 @@ void Graph<p>::addEdge(int id_src, int id_dst,p weight){
 
 //Implementacion de djsoint-set
 class DsjointSet{
-private:
-    vector<int> parent;
-public:
-    DsjointSet(/* args */);
+    private:
+        vector<int> parent;
+        vector<int> size;
+    public:
+        DsjointSet(int n);
+        void makeSet(int v);
+        int findSet(int v);
+        void unionSet(int v,int w);
 };
+
+DsjointSet::DsjointSet(int n){
+    parent = vector<int>(n,-1);
+    size = vector<int>(n,-1);
+}
+
+void DsjointSet::makeSet(int v){
+    parent[v] = v;
+    size[v] = 1;
+}
+
+int DsjointSet::findSet(int v){
+    if(v == parent[v])
+        return v;
+    return parent[v] == findSet(parent[v]);
+
+}
+
+void DsjointSet::unionSet(int v,int w){
+    v = findSet(v);
+    w = findSet(w);
+    if (v != w) {
+        if (size[v] < size[w])
+            swap(v, w);
+        parent[v] = w;
+        size[v] += size[w];
+    }     
+}
+
 
 
 template <typename p>
