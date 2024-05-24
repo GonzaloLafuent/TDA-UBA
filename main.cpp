@@ -2,6 +2,7 @@
 #include "iostream"
 #include "queue"
 #include "algorithm"
+#include <limits>
 
 using namespace std;
 
@@ -94,6 +95,7 @@ void DsjointSet::unionSet(int v,int w){
     }     
 }
 
+//Kruskal
 bool compareEdge(edge x,edge y){
     return x.weight < y.weight;
 }
@@ -119,12 +121,70 @@ vector<edge> kruskal(Graph g){
     return a;
 }
 
+//Implemenetacion de prim
+struct priorityElem{
+    int value;
+    int priority;
+};
+
+class Compare {
+    public:
+        bool operator () (priorityElem a,priorityElem b){
+            return a.priority > b.priority;
+        }
+};
+
+class PriorityQueue{
+    private:
+        vector<priorityElem> q;
+    public:
+
+};
+
+vector<edge> prim(Graph g,int r){
+    int n = g.getCantNodes();
+    vector<edge> result = {}; 
+    priority_queue<priorityElem,vector<priorityElem>,Compare> pq;
+
+    //Mantengo los pesos de cada vertice
+    vector<int> weights(n,numeric_limits<int>::max());
+
+    //Mantengo los padres de cade vertice
+    vector<int> parents(n,0);
+
+    //Mantengo los vertices que voy agregando al AGM
+    vector<int> agm(n,0);
+    pq.push({r,0});
+
+    while(!pq.empty()){
+        priorityElem u = pq.top();
+        pq.pop();
+        
+        if(agm[u.value]==0){
+            agm[u.value] = 1;
+            if(u.value != r) result.push_back({parents[u.value],u.value,u.priority});
+            for(edge e: g.getNeighborhood(u.value)){
+                if( agm[e.id_dst] == 0 && e.weight < weights[e.id_dst] ){
+                    weights[e.id_dst] = e.weight;
+                    pq.push({e.id_dst,e.weight});
+                    parents[e.id_dst] = u.value;
+                }
+            }
+        }
+    }    
+
+    return result; 
+}
+
+
+//Metodos auxiliares
 void printEdges(vector<edge> edges,vector<string> nodes){
     for (edge e: edges){
         cout<<"("<<nodes[e.id_src]<<" ,"<<nodes[e.id_dst]<<") W: "<<e.weight<<endl;   
     }
 }
- 
+
+//Recorrido por bfs 
 void bfs(Graph g,int root,vector<string> nodes){
     queue<int> a_visitar = {};
     vector<bool> visitados(g.getCantNodes(),false); 
@@ -146,9 +206,12 @@ void bfs(Graph g,int root,vector<string> nodes){
 }
 
 int main(){
+
     vector<string> nodes = {"a","b","c","d","e","f","g","h","i"};
     Graph g {9};
-    
+    vector<edge> edges = {};
+    vector<edge> a = {};
+    /*
     g.addEdge(0,1,4);
     g.addEdge(0,7,8);
     g.addEdge(1,7,12);
@@ -164,18 +227,24 @@ int main(){
     g.addEdge(6,8,5);
     g.addEdge(7,8,6);
 
-    cout<<"Grago g: "<<endl;
-    vector<edge> edges = g.getEdges();
+    cout<<"GRAFO G: "<<endl;
+    edges = g.getEdges();
     sort(edges.begin(),edges.end(),compareEdge);
     printEdges(edges,nodes);
 
-    vector<edge> a =  kruskal(g);
+    a =  kruskal(g);
 
     cout<<""<<endl;
-    cout<<"AGM de g: "<<endl;
+    cout<<"AGM DE GRAGO G CON KRUSKAL: "<<endl;
     printEdges(a,nodes);
     cout<<""<<endl;
 
+    a = prim(g,0);
+
+    cout<<"AGM DE GRAGO G CON PRIM: "<<endl;
+    printEdges(a,nodes);
+    cout<<""<<endl;
+    */
     Graph g1 {12};
     vector<string> nodes1 = {"1","2","3","4","5","6","7","8","9","10","11","12"};
     g1.addEdge(0,1,10);
@@ -199,7 +268,7 @@ int main(){
     g1.addEdge(9,10,11);
     g1.addEdge(10,11,8);
 
-    cout<<"Grago g1: "<<endl;
+    cout<<"GRAGO G1: "<<endl;
     edges = g1.getEdges();
     sort(edges.begin(),edges.end(),compareEdge);
     printEdges(edges,nodes1);
@@ -207,8 +276,15 @@ int main(){
     a =  kruskal(g1);
 
     cout<<""<<endl;
-    cout<<"AGM de g: "<<endl;
+    cout<<"AGM DE GRAFO G1 CON KRUSKAL: "<<endl;
     printEdges(a,nodes1);
    
+    a = prim(g1,0);
+
+    cout<<"AGM DE GRAFO G1 CON PRIM: "<<endl;
+    printEdges(a,nodes1);
+    cout<<""<<endl;
+
+
     return 0;
 }
