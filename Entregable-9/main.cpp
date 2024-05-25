@@ -6,6 +6,11 @@
 using namespace std;
 
 //Implementacion de Edge
+struct adjacency{
+    int dst;
+    int weight;
+};
+
 struct edge{
     int id_src;
     int id_dst;
@@ -121,30 +126,45 @@ int weight(int v,int w){
     return rolls;
 }
 
-int main(){
-    vector<int> keys = {0,2145,0213,9113,8113};
+vector<int> keys_nodes = {};
 
-    Graph g {(int) keys.size()};
-    int weight_first_edge = -1;
-    int w_first_edge = -1;
-    for(size_t i = 0; i < keys.size(); i++){
-        for(size_t j = i+1; j< keys.size(); j++){
-            int weight_v_w = weight(keys[i],keys[j]);
-            if(i == 0){ 
-                if(weight_first_edge > weight_v_w || weight_first_edge == -1){
-                    weight_first_edge = weight_v_w;
-                    w_first_edge = j;
-                }
-            }
-            else g.addEdge(i,j,weight_v_w);
+int main(){
+    int cant_tests = 0;
+    cin>>cant_tests;
+
+    for (int test = 0; test < cant_tests; test++){
+        int cant_keys = 0;
+        cin>>cant_keys;
+
+        keys_nodes = {};
+        keys_nodes.push_back(0);
+
+        for (int keys = 0; keys < cant_keys; keys++) {
+            int key = 0;
+            cin>>key;
+            keys_nodes.push_back(key);
         }
-        if(i==0){
-             g.addEdge(0,w_first_edge,weight_first_edge);
-             cout<<keys[0]<<" "<<keys[w_first_edge];
-        }     
+
+        Graph g {(int) keys_nodes.size()}; 
+
+        int min_weight_0 = -1;
+        int adjs_0 = -1;
+
+        for(size_t i = 0; i < keys_nodes.size(); i++){
+            for(size_t j = i+1; j< keys_nodes.size(); j++){
+                int weight_v_w = weight(keys_nodes[i],keys_nodes[j]);
+                if( i==0 ){
+                    if( weight_v_w < min_weight_0 || min_weight_0 ==-1){
+                        min_weight_0 = weight_v_w;
+                        adjs_0 = j;
+                    }    
+                } else g.addEdge(i,j,weight_v_w);
+            }
+            if(i==0) g.addEdge(0,adjs_0,min_weight_0);
+             
+        }
+        cout<<minRolls(g,0)<<endl;    
     }
 
-    printEdges(g.getEdges(),keys);
-    cout<<minRolls(g,0)<<endl;
     return 0;
 }
