@@ -5,34 +5,35 @@
 
 using namespace std;
 
-//Implementacion de Edge
+//Estrctura de adyacencia
 struct adjacency{
     int dst;
     int weight;
 };
 
+//Estructra de arista
 struct edge{
-    int id_src;
-    int id_dst;
+    int src;
+    int dst;
     int weight;
 };
 
 //Implementacion de Grafo
 class Graph {
     private:
-        vector<vector<edge>> adjacencies;
+        vector<vector<adjacency>> adjacencies;
         vector<edge> edges;
         int cant_nodes;    
     public:
         Graph(int n);   
-        void addEdge(int id_src,int id_dst,int weight);
+        void addEdge(int src,int dst,int weight);
         int getCantNodes();
-        vector<edge> getNeighborhood(int id);
+        vector<adjacency> getNeighborhood(int id);
         vector<edge> getEdges();
 };
 
 Graph::Graph(int n){
-    adjacencies = vector<vector<edge>>(n, vector<edge> {});
+    adjacencies = vector<vector<adjacency>>(n, vector<adjacency> {});
     edges = {};
     cant_nodes = n;
 }
@@ -45,38 +46,40 @@ vector<edge> Graph::getEdges(){
     return edges;
 }
 
-vector<edge> Graph::getNeighborhood(int id){
+vector<adjacency> Graph::getNeighborhood(int id){
     return adjacencies[id];
 }
 
-void Graph::addEdge(int id_src, int id_dst,int weight){
-    edge e1 = {id_src,id_dst,weight};
-    edge e2 = {id_dst,id_src,weight};
-    adjacencies[id_src].push_back(e1);
-    adjacencies[id_dst].push_back(e2);
-    edges.push_back(e1);
+void Graph::addEdge(int src, int dst,int weight){
+    //Agrego (v,u)
+    adjacencies[src].push_back({dst,weight});
+    //Agrego (u,v)
+    adjacencies[dst].push_back({src,weight});
+    //Agrego la arista a la lista de aristas con su peso
+    edges.push_back({src,dst,weight});
 }
 
 //Printear arcos de los nodos
 void printEdges(vector<edge> edges,vector<int> nodes){
     for (edge e: edges){
-        cout<<"("<<nodes[e.id_src]<<" ,"<<nodes[e.id_dst]<<") W: "<<e.weight<<endl;   
+        cout<<"("<<nodes[e.src]<<" ,"<<nodes[e.dst]<<") W: "<<e.weight<<endl;   
     }
 }
 
 //Implemenetacion de prim
+//Elemento de cola de prioridad
 struct priorityElem{
     int value;
     int priority;
 };
 
+//Comparador de prioridades
 class Compare {
     public:
         bool operator () (priorityElem a,priorityElem b){
             return a.priority > b.priority;
         }
 };
-
 
 int minRolls(Graph g,int r){
     int minRolls = 0;
@@ -93,18 +96,22 @@ int minRolls(Graph g,int r){
     vector<int> agm(n,0);
     pq.push({r,0});
 
-    while(!pq.empty()){
+    while(!pq.empty() && n>=0){
         priorityElem u = pq.top();
         pq.pop();
-        
+
         if(agm[u.value]==0){
+            n--;
             agm[u.value] = 1;
-            if(u.value != r) minRolls+= u.priority;
-            for(edge e: g.getNeighborhood(u.value)){
-                if( agm[e.id_dst] == 0 && e.weight < weights[e.id_dst] ){
-                    weights[e.id_dst] = e.weight;
-                    pq.push({e.id_dst,e.weight});
-                    parents[e.id_dst] = u.value;
+            minRolls+= u.priority;
+            int v = u.value;
+            for(adjacency a: g.getNeighborhood(v)){
+                int w = a.dst;
+                int new_weight_vw = a.weight;
+                if( agm[w] == 0 && new_weight_vw < weights[w] ){
+                    weights[a.dst] = new_weight_vw;
+                    pq.push({w,new_weight_vw});
+                    parents[w] = v;
                 }
             }
         }
@@ -165,6 +172,5 @@ int main(){
         }
         cout<<minRolls(g,0)<<endl;    
     }
-
     return 0;
 }
