@@ -5,7 +5,7 @@
 
 using namespace std;
 
-//Estrctura de adyacencia
+//Estructura de adyacencia
 struct adjacency{
     int dst;
     int weight;
@@ -59,14 +59,13 @@ void Graph::addEdge(int src, int dst,int weight){
     edges.push_back({src,dst,weight});
 }
 
-//Printear arcos de los nodos
+//Printear aristas del grafo
 void printEdges(vector<edge> edges,vector<int> nodes){
     for (edge e: edges){
         cout<<"("<<nodes[e.src]<<" ,"<<nodes[e.dst]<<") W: "<<e.weight<<endl;   
     }
 }
 
-//Implemenetacion de prim
 //Elemento de cola de prioridad
 struct priorityElem{
     int value;
@@ -81,6 +80,7 @@ class Compare {
         }
 };
 
+//Construyo la cantidad minima de rolls en base a prim
 int minRolls(Graph g,int r){
     int minRolls = 0;
     int n = g.getCantNodes(); 
@@ -94,8 +94,11 @@ int minRolls(Graph g,int r){
 
     //Mantengo los vertices que voy agregando al AGM
     vector<int> agm(n,0);
+    //Agrego la raiz
     pq.push({r,0});
 
+    //Itero hasta que desencole todos las aritas de la cola, o hasta haber agregado
+    //todos los nodos al arbol
     while(!pq.empty() && n>=0){
         priorityElem u = pq.top();
         pq.pop();
