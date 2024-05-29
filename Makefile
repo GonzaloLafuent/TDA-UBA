@@ -7,7 +7,7 @@ OUTPUT_FILENAME := app
 
 all: app
 
-app: main.cpp 
+app: dGrahp.cpp 
 	@mkdir -p $(OUTPUT_PATH)
 	$(CC) $(CPPFLAGS) $< -o $(OUTPUT_PATH)/$(OUTPUT_FILENAME)
 
