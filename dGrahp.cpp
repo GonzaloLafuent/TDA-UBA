@@ -120,23 +120,22 @@ vector<int> dijsktra(Dgraph g,int r){
     distances[r] = 0;
     pq.push({r,0});
 
-    for(adjacency a :g.getNeighborhood(r))
-        distances[a.dst] = a.weight;
-
-    while( n >= 0){
-        n--;
+    while( n > 0 || !pq.empty()){
         int w = pq.top().value;
         pq.pop();
-        select_nodes[w] = 1;
-        vector<adjacency> w_adj = g.getNeighborhood(w);
+        if( select_nodes[w]==0 ){
+            n--;
+            select_nodes[w] = 1;
+            vector<adjacency> w_adj = g.getNeighborhood(w);
 
-        for(size_t i = 0;  i < w_adj.size();i++ ){
-            int u = w_adj[i].dst;
-            int weight_w_u = w_adj[i].weight;
-            if( select_nodes[u] == 0 && distances[u] > (distances[w] + weight_w_u) ){
-                distances[u] = distances[w] + weight_w_u;
-                pq.push({u,distances[u]});
-            }    
+            for(size_t i = 0;  i < w_adj.size();i++ ){
+                int u = w_adj[i].dst;
+                int weight_w_u = w_adj[i].weight;
+                if( select_nodes[u] == 0 && distances[u] > (distances[w] + weight_w_u) ){
+                    distances[u] = distances[w] + weight_w_u;
+                    pq.push({u,distances[u]});
+                }    
+            }
         }
     }
 
@@ -146,6 +145,12 @@ vector<int> dijsktra(Dgraph g,int r){
 void printEdges(vector<edge> edges,vector<int> nodes){
     for (edge e: edges){
         cout<<"("<<nodes[e.src]<<" ,"<<nodes[e.dst]<<") W: "<<e.weight<<endl;   
+    }
+}
+
+void printDistances(int v,vector<int> distances,vector<int> nodes){
+    for (size_t i = 0; i < nodes.size(); i++) {
+        cout<<"el camino minimo de "<<nodes[v]<<" a "<<nodes[i]<<" es "<<distances[i]<<endl;
     }
 }
 
@@ -165,9 +170,7 @@ int main(){
     printEdges(g.getEdges(),nodes);
 
     vector<int> r = dijsktra(g,0);
-    for (size_t i = 0; i < r.size(); i++){
-        cout<<r[i]<<endl;
-    }
+    printDistances(0,r,nodes);
     
 
     return 0;
