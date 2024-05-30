@@ -161,6 +161,7 @@ int main(){
     int k = 0;
     int i = 0;
     while(cin >> n >> k && i==0){
+        Dgraph g {100};
         cout<<n<<" "<<k<<endl;
         for(int elevs = 0; elevs < n; elevs++){
             int time_elevs = 0;
@@ -174,10 +175,26 @@ int main(){
             getline(cin,line);
             stringstream stream(line);
             int f1; stream >> f1;
+            int nodes_id = 0;
             while(stream) {
                 int f2;
                 stream >> f2;
-                nodes.push_back({f1});
+                nodes.push_back({f1,i});
+                if( id_node_floors[f1] == -1) id_node_floors[f1] = nodes_id;
+                else{
+                    g.addEdge(nodes_id,id_node_floors[f1],time(nodes_id,id_node_floors[f1]));
+                    g.addEdge(id_node_floors[f1],nodes_id,time(nodes_id,id_node_floors[f1]));
+                    id_node_floors[f1] = nodes_id;
+                }
+                nodes_id++;
+                nodes.push_back({f2,i});
+                if( id_node_floors[f2] == -1) id_node_floors[f2] = nodes_id;
+                else{
+                    g.addEdge(nodes_id,id_node_floors[f2],time(nodes_id,id_node_floors[f2]));
+                    g.addEdge(id_node_floors[f2],nodes_id,time(nodes_id,id_node_floors[f2]));
+                    id_node_floors[f2] = nodes_id;
+                }
+                nodes_id++;                 
                 f1 = f2;
             }
         }    
