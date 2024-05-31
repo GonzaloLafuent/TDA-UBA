@@ -95,7 +95,7 @@ class Compare {
         }
 };
 
-vector<int> dijsktra(Graph g,int r,int cant_nodes,int k){
+void dijsktra(Graph g,int r,int cant_nodes,int k){
     int n = cant_nodes;
     vector<int> distances(n,numeric_limits<int>::max());
     priority_queue<priorityElem,vector<priorityElem>,Compare> pq;
@@ -123,8 +123,6 @@ vector<int> dijsktra(Graph g,int r,int cant_nodes,int k){
             }
         }
     }
-
-    return distances;
 }
 
 void printEdges(vector<edge> edges,vector<floor> n){
@@ -203,6 +201,9 @@ int main(){
                 }
             }
         } 
+
+        printEdges(g.getEdges(),nodes);
+        cout<<endl;
 
         string result = "";
         dijsktra(g,0, (int)nodes.size(),k);
