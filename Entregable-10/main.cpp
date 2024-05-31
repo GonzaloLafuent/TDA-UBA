@@ -74,6 +74,8 @@ vector<int> times = {};
 
 vector<floor> nodes = {};
 
+int k_min_distance = numeric_limits<int>::max();
+
 int time(int src,int dst){
     int floor_dst = nodes[dst].floor_numb;
     int floor_src = nodes[src].floor_numb;
@@ -93,7 +95,7 @@ class Compare {
         }
 };
 
-vector<int> dijsktra(Graph g,int r,int cant_nodes){
+vector<int> dijsktra(Graph g,int r,int cant_nodes,int k){
     int n = cant_nodes;
     vector<int> distances(n,numeric_limits<int>::max());
     priority_queue<priorityElem,vector<priorityElem>,Compare> pq;
@@ -115,6 +117,7 @@ vector<int> dijsktra(Graph g,int r,int cant_nodes){
                 int weight_w_u = w_adj[i].weight;
                 if( select_nodes[u] == 0 && distances[u] > (distances[w] + weight_w_u) ){
                     distances[u] = distances[w] + weight_w_u;
+                    k_min_distance = (nodes[u].floor_numb==k && distances[u] < k_min_distance)? distances[u]: k_min_distance;
                     pq.push({u,distances[u]});
                 }    
             }
@@ -155,12 +158,13 @@ void another_elev_in_floor(int f,int node_id,Graph& g){
 int main(){
     int n = 0;
     int k = 0;
-    int cases = 0;
+
     while(cin >> n >> k){
         Graph g {500};
         times = vector<int>(n,0);
         nodes = {{-1,-1}};
         id_node_floors = vector<int>(100,-1);
+        k_min_distance = numeric_limits<int>::max();
         bool is_k = false;
 
         for(int elevs = 0; elevs < n; elevs++){
@@ -200,15 +204,12 @@ int main(){
             }
         } 
 
-        vector<int> r = {};
-        cout<<"case "<<cases<<endl;
-        cases++;
-        if(!is_k) cout<<"IMPOSSIBLE"<<endl;
-        else {
-            r = dijsktra(g,0, (int)nodes.size());
-            printEdges(g.getEdges(),nodes);
-            printDistances(0,r,nodes);
-        }
+        string result = "";
+        dijsktra(g,0, (int)nodes.size(),k);
+        stringstream ss;
+        ss << k_min_distance;
+        result = (!is_k || k_min_distance== numeric_limits<int>::max())? "IMPOSSIBLE":ss.str();
+        cout<<result<<endl;
     }
 
     /*
