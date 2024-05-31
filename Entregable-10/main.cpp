@@ -20,78 +20,65 @@ struct edge{
     int weight;
 };
 
-//Implementacion de Grafo
-class Dgraph {
-    private:
-        vector<vector<adjacency>> adjacencies;
-        vector<edge> edges;
-        int cant_nodes;    
-    public:
-        Dgraph(int n);   
-        void addEdge(int src,int dst,int weight);
-        int getCantNodes();
-        vector<adjacency> getNeighborhood(int id);
-        vector<edge> getEdges();
-};
-
-Dgraph::Dgraph(int n){
-    adjacencies = vector<vector<adjacency>>(n, vector<adjacency> {});
-    edges = {};
-    cant_nodes = n;
-}
-
-int Dgraph::getCantNodes(){
-    return cant_nodes;
-}
-
-vector<edge> Dgraph::getEdges(){
-    return edges;
-}
-
-vector<adjacency> Dgraph::getNeighborhood(int id){
-    return adjacencies[id];
-}
-
-void Dgraph::addEdge(int src, int dst,int weight){
-    //Agrego (v,u)
-    adjacencies[src].push_back({dst,weight});
-    //Agrego la arista a la lista de aristas con su peso
-    edges.push_back({src,dst,weight});
-}
-
 //Representamos un piso con el numero de y en que ascensor estamos en ese piso
 struct floor{
     int floor_numb;
     int elevator_cost;
 };
 
-//Ponemos aca que nodo representa cada piso al ir agregandolo
-vector<int> id_node_floors(100,-1);
-
-vector<int> t = {10,50,100};
-vector<int> t1 = {0,10,30,40};
-vector<int> t2 = {0,20,30};
-vector<int> t3 = {0,20,50};
-
-vector<floor> nodes = {
-        {-1,-1},
-        {0,0},
-        {0,1},
-        {0,2},
-        {10,0},
-        {20,1},
-        {20,2},
-        {30,0},
-        {30,1},
-        {40,0},
-        {50,2},
+//Implemetatcion de grafo dirigido
+class Graph {
+    private:
+        vector<vector<adjacency>> adjacencies;
+        vector<edge> edges;
+        int cant_nodes;    
+    public:
+        Graph(int n);   
+        void addEdge(int src,int dst,int weight);
+        int getCantNodes();
+        vector<adjacency> getNeighborhood(int id);
+        vector<edge> getEdges();
 };
+
+Graph::Graph(int n){
+    adjacencies = vector<vector<adjacency>>(n, vector<adjacency> {});
+    edges = {};
+    cant_nodes = n;
+}
+
+int Graph::getCantNodes(){
+    return cant_nodes;
+}
+
+vector<edge> Graph::getEdges(){
+    return edges;
+}
+
+vector<adjacency> Graph::getNeighborhood(int id){
+    return adjacencies[id];
+}
+
+void Graph::addEdge(int src, int dst,int weight){
+    //Agrego (v,u)
+    adjacencies[src].push_back({dst,weight});
+    //Agrego (u,v)
+    adjacencies[dst].push_back({src,weight});
+    //Agrego la arista a la lista de aristas con su peso
+    edges.push_back({src,dst,weight});
+}
+
+//Ponemos aca que nodo representa cada piso al ir agregandolo
+vector<int> id_node_floors = {};
+
+vector<int> times = {};
+
+vector<floor> nodes = {};
 
 int time(int src,int dst){
     int floor_dst = nodes[dst].floor_numb;
     int floor_src = nodes[src].floor_numb;
     int floor_cost = nodes[src].elevator_cost;
-    return (floor_src==-1)? 0 :(floor_dst!=floor_src)? t[floor_cost]*(abs(floor_dst-floor_src)): 60;
+    return (floor_src==-1)? 0 :(floor_dst!=floor_src)? times[floor_cost]*(abs(floor_dst-floor_src)): 60;
 }
 
 struct priorityElem{
@@ -106,8 +93,8 @@ class Compare {
         }
 };
 
-vector<int> dijsktra(Dgraph g,int r){
-    int n = g.getCantNodes();
+vector<int> dijsktra(Graph g,int r,int cant_nodes){
+    int n = cant_nodes;
     vector<int> distances(n,numeric_limits<int>::max());
     priority_queue<priorityElem,vector<priorityElem>,Compare> pq;
     vector<int> select_nodes(n,0);
@@ -115,7 +102,7 @@ vector<int> dijsktra(Dgraph g,int r){
     distances[r] = 0;
     pq.push({r,0});
 
-    while( n > 0 || !pq.empty()){
+    while( n > 0 && !pq.empty()){
         int w = pq.top().value;
         pq.pop();
         if( select_nodes[w]==0 ){
@@ -139,7 +126,8 @@ vector<int> dijsktra(Dgraph g,int r){
 
 void printEdges(vector<edge> edges,vector<floor> n){
     for (edge e: edges) {
-        cout<<"voy de "<<n[e.src].floor_numb<<" a "<<n[e.dst].floor_numb<<" con un costo de "<<e.weight<<endl;
+        int elev = (e.weight==60)? -1: n[e.src].elevator_cost;
+        cout<<"voy de "<<n[e.src].floor_numb<<" a "<<n[e.dst].floor_numb<<" con un costo de "<<e.weight<<" Por el ascensor: "<<elev<<endl;
     }
 }
 
@@ -156,53 +144,92 @@ void printDistances(int v,vector<int> distances,vector<floor> nodes){
     }
 }
 
+void another_elev_in_floor(int f,int node_id,Graph& g){
+    if( f!=0){
+        if( id_node_floors[f] == -1 )
+            id_node_floors[f] = node_id;
+        else g.addEdge(node_id,id_node_floors[f],60);
+    }
+}
+
 int main(){
     int n = 0;
     int k = 0;
-    int i = 0;
-    while(cin >> n >> k && i==0){
-        Dgraph g {100};
-        cout<<n<<" "<<k<<endl;
+    int cases = 0;
+    while(cin >> n >> k){
+        Graph g {500};
+        times = vector<int>(n,0);
+        nodes = {{-1,-1}};
+        id_node_floors = vector<int>(100,-1);
+        bool is_k = false;
+
         for(int elevs = 0; elevs < n; elevs++){
             int time_elevs = 0;
             cin>>time_elevs;
-            cout<<time_elevs<<endl;
-            t.push_back(time_elevs);
+            times[elevs] = time_elevs;
         }
+
+        int node_id = 0;
         for(int j = 0; j < n; j++){
             string line = "";
-            getline(cin,line);
+            if(j==0) getline(cin,line);
             getline(cin,line);
             stringstream stream(line);
-            int f1; stream >> f1;
-            int nodes_id = 0;
+            int f1 = -1;
             while(stream) {
-                int f2;
-                stream >> f2;
-                nodes.push_back({f1,i});
-                if( id_node_floors[f1] == -1) id_node_floors[f1] = nodes_id;
-                else{
-                    g.addEdge(nodes_id,id_node_floors[f1],time(nodes_id,id_node_floors[f1]));
-                    g.addEdge(id_node_floors[f1],nodes_id,time(nodes_id,id_node_floors[f1]));
-                    id_node_floors[f1] = nodes_id;
+                int f2; stream >> f2;
+                is_k = (f2==k)? true: is_k;
+
+                if(f1 != f2 ){
+                    if( f2 != 0 && f1 == -1) {
+                        nodes.push_back({f2,j});
+                        if(stream){
+                            another_elev_in_floor(f2,node_id,g);
+                            node_id++;
+                            f1 = f2;                        
+                        } else another_elev_in_floor(f2,node_id,g);
+                    } else { 
+                        nodes.push_back({f2,j});
+                        int old_node_id = node_id;
+                        node_id++;
+                        g.addEdge((f2==0)?0:old_node_id, node_id ,time((f2==0)?0:old_node_id,node_id));
+                        another_elev_in_floor(f2,node_id,g);
+                        f1 = f2;
+                    } 
                 }
-                nodes_id++;
-                nodes.push_back({f2,i});
-                if( id_node_floors[f2] == -1) id_node_floors[f2] = nodes_id;
-                else{
-                    g.addEdge(nodes_id,id_node_floors[f2],time(nodes_id,id_node_floors[f2]));
-                    g.addEdge(id_node_floors[f2],nodes_id,time(nodes_id,id_node_floors[f2]));
-                    id_node_floors[f2] = nodes_id;
-                }
-                nodes_id++;                 
-                f1 = f2;
             }
-        }    
+        } 
+
+        vector<int> r = {};
+        cout<<"case "<<cases<<endl;
+        cases++;
+        if(!is_k) cout<<"IMPOSSIBLE"<<endl;
+        else {
+            r = dijsktra(g,0, (int)nodes.size());
+            printEdges(g.getEdges(),nodes);
+            printDistances(0,r,nodes);
+        }
     }
+
     /*
     int n = 3;
     int k = 50;
 
+    Graph g = {(int) nodes.size()};
+    g.addEdge(0,1,0);
+    g.addEdge(0,2,0);
+    g.addEdge(0,3,0);
+    g.addEdge(1,4,time(1,4));
+    g.addEdge(2,5,time(2,5));
+    g.addEdge(3,6,time(3,6));
+    g.addEdge(4,7,time(4,7));
+    g.addEdge(5,8,time(5,8));
+    g.addEdge(5,6,time(5,6));
+    g.addEdge(7,8,time(7,8));
+    g.addEdge(7,9,time(7,9));
+    g.addEdge(6,10,time(6,10));
+
+    
     Dgraph g = {(int)nodes.size()};
     
     g.addEdge(0,1,0);
@@ -237,5 +264,6 @@ int main(){
     vector<int> r = dijsktra(g,0);
     printDistances(0,r,nodes);
     */
+
     return 0;
 }
