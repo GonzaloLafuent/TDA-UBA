@@ -146,10 +146,13 @@ void printDistances(int v,vector<int> distances,vector<floor> nodes){
 }
 
 void another_elev_in_floor(int f,int node_id,Graph& g){
-    if( f!=0){
-        if( id_node_floors[f] == -1 )
+    if( f!= 0){
+        if( id_node_floors[f] == -1 ){
             id_node_floors[f] = node_id;
-        else g.addEdge(node_id,id_node_floors[f],60);
+        }
+        else {
+            g.addEdge(node_id,id_node_floors[f],60);
+        }    
     }
 }
 
@@ -178,11 +181,18 @@ int main(){
             getline(cin,line);
             stringstream stream(line);
             int f1 = -1;
+            int f2 = -1;
             while(stream) {
-                int f2; stream >> f2;
+                
+                cout<<"Estos es j: "<<j<<endl;
+                cout<<f2<<endl;
+                cout<<f1<<endl;
+                    
+                stream >> f2;
                 is_k = (f2==k)? true: is_k;
 
                 if(f1 != f2 ){
+                    if(f1 ==  99) cout<<"f1: "<<f1<<"f2: "<<f2<<endl;
                     if( f2 != 0 && f1 == -1) {
                         nodes.push_back({f2,j});
                         if(stream){
