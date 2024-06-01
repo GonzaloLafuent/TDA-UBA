@@ -20,12 +20,6 @@ struct edge{
     int weight;
 };
 
-//Representamos un piso con el numero de y en que ascensor estamos en ese piso
-struct floor{
-    int floor_numb;
-    int elevator_cost;
-};
-
 //Implemetatcion de grafo dirigido
 class Graph {
     private:
@@ -68,6 +62,12 @@ void Graph::addEdge(int src, int dst,int weight){
 }
 
 //Ponemos aca que nodo representa cada piso al ir agregandolo
+//Representamos un piso con el numero de y en que ascensor estamos en ese piso
+struct floor{
+    int floor_numb;
+    int elevator_cost;
+};
+
 vector<vector<int>> id_node_floors = {};
 
 vector<int> times = {};
@@ -75,13 +75,6 @@ vector<int> times = {};
 vector<floor> nodes = {};
 
 int k_min_distance = numeric_limits<int>::max();
-
-int time(int src,int dst){
-    int floor_dst = nodes[dst].floor_numb;
-    int floor_src = nodes[src].floor_numb;
-    int floor_cost = nodes[src].elevator_cost;
-    return (floor_src==-1)? 0 :(floor_dst!=floor_src)? times[floor_cost]*(abs(floor_dst-floor_src)): 60;
-}
 
 struct priorityElem{
     int value;
@@ -104,7 +97,7 @@ void dijsktra(Graph g,int r,int cant_nodes,int k){
     distances[r] = 0;
     pq.push({r,0});
 
-    while( !pq.empty()){
+    while( n>0 && !pq.empty()){
         int w = pq.top().value;
         pq.pop();
         if( n > 0 &&select_nodes[w]==0 ){
@@ -136,6 +129,13 @@ void another_elev_in_floor(int f,int node_id,Graph& g){
             id_node_floors[f].push_back(node_id);
         }    
     }
+}
+
+int time(int src,int dst){
+    int floor_dst = nodes[dst].floor_numb;
+    int floor_src = nodes[src].floor_numb;
+    int floor_cost = nodes[src].elevator_cost;
+    return (floor_src==-1)? 0 :(floor_dst!=floor_src)? times[floor_cost]*(abs(floor_dst-floor_src)): 60;
 }
 
 int main(){
