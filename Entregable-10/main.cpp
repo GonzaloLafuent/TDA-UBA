@@ -21,6 +21,9 @@ struct edge{
 };
 
 //Implemetatcion de grafo dirigido
+//Lo implementamos con un grafo no dirigido dado que a cada piso yo puedo subr y bajar
+//luego si por cada ascensor conecta dos pisos tengo una aritas (a,b) y (b,a), es lo mismo que tener
+//una aisrta sin direccion entre ambos pisos
 class Graph {
     private:
         vector<vector<adjacency>> adjacencies;
@@ -61,19 +64,25 @@ void Graph::addEdge(int src, int dst,int weight){
     edges.push_back({src,dst,weight});
 }
 
-//Ponemos aca que nodo representa cada piso al ir agregandolo
-//Representamos un piso con el numero de y en que ascensor estamos en ese piso
+//Cada nodo sera un piso
+//El piso estara repsentado por el numoer de piso y el ascensro que se puedeo usar ahi
 struct floor{
     int floor_numb;
     int elevator_cost;
 };
 
+//Nodos indica el id del nodo que repsenta un piso
+//por cada piso tenemos un vector de id dado que en el caso de que para un piso tengamos mutiples ascensores
+//vams a tener multiples nodos que lo representan dependiendo la cantidad de ascensores que haya en ese piso
 vector<vector<int>> id_node_floors = {};
 
+//Guardamos el tiempo de piso a piso que nos lleva cada ascensor
 vector<int> times = {};
 
+//Guardos los pisos con la representacion generada antes
 vector<floor> nodes = {};
 
+//Mantenemos la menor distancia a k
 int k_min_distance = numeric_limits<int>::max();
 
 struct priorityElem{
@@ -88,6 +97,9 @@ class Compare {
         }
 };
 
+//Implementacion de dijsktra para obtener la distancia minima a k
+//En este caso no devuelvo todas las distancias, por cada nodo que pase con numero de piso igual a k
+//me fijo si la distancia es menor al mejor minimo que tenia hasta ahora
 void dijsktra(Graph g,int r,int cant_nodes,int k){
     int n = cant_nodes;
     vector<int> distances(n,numeric_limits<int>::max());
@@ -100,7 +112,7 @@ void dijsktra(Graph g,int r,int cant_nodes,int k){
     while( n>0 && !pq.empty()){
         int w = pq.top().value;
         pq.pop();
-        if( n > 0 &&select_nodes[w]==0 ){
+        if(select_nodes[w]==0 ){
             n--;
             select_nodes[w] = 1;
             vector<adjacency> w_adj = g.getNeighborhood(w);
@@ -118,6 +130,11 @@ void dijsktra(Graph g,int r,int cant_nodes,int k){
     }
 }
 
+//funcion utilizada para modelar el grafo de mi problema
+//lo que hace es ver si ya hay un nodo que representa a un deteterminado piso
+//si no lo hay agrega el id del nodo a la lista de ids que representan a ese piso
+//en el caso de haberlo, genra aritas entre todos los nodos que repsentan a ese pios, tal que signifca que puedo cambiar de ascensro entre todos ellos
+//por el ultimo agrego el id a la lista de nodo
 void another_elev_in_floor(int f,int node_id,Graph& g){
     if( f!= 0){
         if( id_node_floors[f].size() == 0 ){
@@ -131,6 +148,9 @@ void another_elev_in_floor(int f,int node_id,Graph& g){
     }
 }
 
+//Calculo el costo de las aritas meidnate la funcion tiempo
+//A la diferencia entre el piso destino y el piso de origen, le multiplico el costo del ascensor de origen
+//si el piso de orgen es igual al de destino signfica que solo cambiamos de ascensor, por lo tanto sera 60
 int time(int src,int dst){
     int floor_dst = nodes[dst].floor_numb;
     int floor_src = nodes[src].floor_numb;
