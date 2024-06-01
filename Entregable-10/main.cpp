@@ -68,7 +68,7 @@ void Graph::addEdge(int src, int dst,int weight){
 }
 
 //Ponemos aca que nodo representa cada piso al ir agregandolo
-vector<int> id_node_floors = {};
+vector<vector<int>> id_node_floors = {};
 
 vector<int> times = {};
 
@@ -95,6 +95,13 @@ class Compare {
         }
 };
 
+void printDistances(int v,vector<int> distances,vector<floor> nodes){
+    for (size_t i = 0; i < nodes.size(); i++) {
+        if(distances[i] == 499 ) cout<<"fhjkdsfjkhsdjkfd";
+        cout<<"el camino minimo de "<<nodes[v].floor_numb<<" a "<<nodes[i].floor_numb<<" es "<<distances[i]<<endl;
+    }
+}
+
 void dijsktra(Graph g,int r,int cant_nodes,int k){
     int n = cant_nodes;
     vector<int> distances(n,numeric_limits<int>::max());
@@ -104,10 +111,10 @@ void dijsktra(Graph g,int r,int cant_nodes,int k){
     distances[r] = 0;
     pq.push({r,0});
 
-    while( n > 0 && !pq.empty()){
+    while( !pq.empty()){
         int w = pq.top().value;
         pq.pop();
-        if( select_nodes[w]==0 ){
+        if( n > 0 &&select_nodes[w]==0 ){
             n--;
             select_nodes[w] = 1;
             vector<adjacency> w_adj = g.getNeighborhood(w);
@@ -128,7 +135,10 @@ void dijsktra(Graph g,int r,int cant_nodes,int k){
 void printEdges(vector<edge> edges,vector<floor> n){
     for (edge e: edges) {
         int elev = (e.weight==60)? -1: n[e.src].elevator_cost;
-        cout<<"voy de "<<n[e.src].floor_numb<<" a "<<n[e.dst].floor_numb<<" con un costo de "<<e.weight<<" Por el ascensor: "<<elev<<endl;
+        int src_numb = n[e.src].floor_numb; int dst_numb = n[e.dst].floor_numb;
+        int src_elev = n[e.src].elevator_cost; int dst_elev = n[e.dst].elevator_cost;
+        if(src_numb == dst_numb ) cout <<"puedo cambiar de ascensor en piso "<<src_numb<<" Desde ascensor "<<src_elev<<" a "<<dst_elev<<endl;
+        else cout<<"voy de "<<src_numb<<" a "<<dst_numb<<" con un costo de "<<e.weight<<" Por el ascensor: "<<elev<<endl;
     }
 }
 
@@ -139,19 +149,15 @@ void printNeighborhood(int src,vector<adjacency> neigh,vector<floor> n){
     cout<<endl;
 }
 
-void printDistances(int v,vector<int> distances,vector<floor> nodes){
-    for (size_t i = 0; i < nodes.size(); i++) {
-        cout<<"el camino minimo de "<<nodes[v].floor_numb<<" a "<<nodes[i].floor_numb<<" es "<<distances[i]<<endl;
-    }
-}
-
 void another_elev_in_floor(int f,int node_id,Graph& g){
     if( f!= 0){
-        if( id_node_floors[f] == -1 ){
-            id_node_floors[f] = node_id;
-        }
-        else {
-            g.addEdge(node_id,id_node_floors[f],60);
+        if( id_node_floors[f].size() == 0 ){
+            id_node_floors[f].push_back(node_id);
+        } else {
+            for(int n: id_node_floors[f]){
+                g.addEdge(n,node_id,60);    
+            }
+            id_node_floors[f].push_back(node_id);
         }    
     }
 }
@@ -164,7 +170,7 @@ int main(){
         Graph g {500};
         times = vector<int>(n,0);
         nodes = {{-1,-1}};
-        id_node_floors = vector<int>(100,-1);
+        id_node_floors = vector<vector<int>>(100,vector<int> {});
         k_min_distance = numeric_limits<int>::max();
         bool is_k = false;
 
@@ -183,21 +189,16 @@ int main(){
             int f1 = -1;
             int f2 = -1;
             while(stream) {
-                
-                cout<<"Estos es j: "<<j<<endl;
-                cout<<f2<<endl;
-                cout<<f1<<endl;
                     
                 stream >> f2;
                 is_k = (f2==k)? true: is_k;
 
                 if(f1 != f2 ){
-                    if(f1 ==  99) cout<<"f1: "<<f1<<"f2: "<<f2<<endl;
-                    if( f2 != 0 && f1 == -1) {
+                    if( f2 != 0 && f1 == -1) {                        
                         nodes.push_back({f2,j});
+                        node_id++;
                         if(stream){
                             another_elev_in_floor(f2,node_id,g);
-                            node_id++;
                             f1 = f2;                        
                         } else another_elev_in_floor(f2,node_id,g);
                     } else { 
@@ -212,15 +213,13 @@ int main(){
             }
         } 
 
-        printEdges(g.getEdges(),nodes);
-        cout<<endl;
-
         string result = "";
         dijsktra(g,0, (int)nodes.size(),k);
         stringstream ss;
         ss << k_min_distance;
         result = (!is_k || k_min_distance== numeric_limits<int>::max())? "IMPOSSIBLE":ss.str();
         cout<<result<<endl;
+        
     }
 
     /*
