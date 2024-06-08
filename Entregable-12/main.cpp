@@ -14,39 +14,32 @@ struct adjacency{
 struct edge{
     int src;
     int dst;
-    int weight;
+    long weight;
 };
 
 class dGrahpM {
     private:
         int nodes;
-        vector<vector<int>> adjacencys;
+        vector<vector<long>> adjacencys;
         vector<edge> edges;
-        int weight_sum;
     public:
         dGrahpM(int n);
-        void addEdge(int src,int dst,int weight);
+        void addEdge(int src,int dst,long weight);
         int getCantNodes();
         vector<adjacency> getNeighborhood(int id);
         vector<edge> getEdges();
-        vector<vector<int>> getDistances();
-        int getWeightSum();
+        vector<vector<long>> getDistances();
 };
 
 dGrahpM::dGrahpM(int n) {
     nodes = n;
-    adjacencys = vector<vector<int>>(n, vector<int>(n,numeric_limits<int>::max()));
+    adjacencys = vector<vector<long>>(n, vector<long>(n,numeric_limits<long>::max()));
 }
 
-void dGrahpM::addEdge(int src,int dst,int weight){
+void dGrahpM::addEdge(int src,int dst,long weight){
     adjacencys[src][dst] = weight; 
     edges.push_back({src,dst,weight});
-    weight_sum += weight;
 } 
-
-int dGrahpM::getWeightSum(){
-    return weight_sum;
-}
 
 int dGrahpM::getCantNodes(){
     return nodes;
@@ -66,7 +59,7 @@ vector<edge> dGrahpM::getEdges(){
     return edges;
 }
 
-vector<vector<int>> dGrahpM::getDistances(){
+vector<vector<long>> dGrahpM::getDistances(){
     return adjacencys;
 }
 
@@ -74,16 +67,16 @@ vector<int> attacked = {};
 
 int attackCost(dGrahpM& g,vector<int>& attack){
     int n = g.getCantNodes();
-    vector<vector<int>> distances = g.getDistances();
-    int infinite = numeric_limits<int>::max();
+    vector<vector<long>> distances = g.getDistances();
+    long infinite = numeric_limits<long>::max();
     reverse(attack.begin(),attack.end());
-    int sum = 0;
+    long sum = 0;
 
     for (int k: attack){
         attacked[k] = 1;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n ; j++){
-                int distance_i_k_j = (distances[i][k] != infinite)? (distances[k][j]!= infinite)? distances[i][k] + distances[k][j]: infinite : infinite;
+                long distance_i_k_j = (distances[i][k] != infinite)? (distances[k][j]!= infinite)? distances[i][k] + distances[k][j]: infinite : infinite;
                 distances[i][j] = min(distances[i][j],distance_i_k_j);
                 sum += (attacked[i]!=0 && attacked[j]!= 0 ) ? distances[i][j]: 0;
             }
@@ -105,7 +98,7 @@ int main(){
 
         for (int tower_v = 0; tower_v < cant_towers; tower_v++){
             for (int tower_u = 0; tower_u < cant_towers; tower_u++){
-                int cost_communication = 0;
+                long cost_communication = 0;
                 cin>>cost_communication;
                 g.addEdge(tower_v,tower_u,cost_communication);
             }   
