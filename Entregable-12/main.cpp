@@ -33,7 +33,7 @@ class dGrahpM {
 
 dGrahpM::dGrahpM(int n) {
     nodes = n;
-    adjacencys = vector<vector<long>>(n, vector<long>(n,numeric_limits<long>::max()));
+    adjacencys = vector<vector<long>>(n, vector<long>(n,0));
 }
 
 void dGrahpM::addEdge(int src,int dst,long weight){
@@ -64,21 +64,21 @@ vector<vector<long>> dGrahpM::getDistances(){
 }
 
 vector<int> attacked = {};
+vector<int> estrategy = {};
 
-int attackCost(dGrahpM& g,vector<int>& attack){
+int attackCost(dGrahpM g){
     int n = g.getCantNodes();
     vector<vector<long>> distances = g.getDistances();
-    long infinite = numeric_limits<long>::max();
-    reverse(attack.begin(),attack.end());
+    reverse(estrategy.begin(),estrategy.end());
     long sum = 0;
 
-    for (int k: attack){
+    for (int k: estrategy){
         attacked[k] = 1;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n ; j++){
-                long distance_i_k_j = (distances[i][k] != infinite)? (distances[k][j]!= infinite)? distances[i][k] + distances[k][j]: infinite : infinite;
-                distances[i][j] = min(distances[i][j],distance_i_k_j);
-                sum += (attacked[i]!=0 && attacked[j]!= 0 ) ? distances[i][j]: 0;
+                distances[i][j] = min(distances[i][j],distances[i][k]+ distances[k][j]);
+                if( attacked[i] == 1 && attacked[j] == 1 )
+                    sum += distances[i][j];
             }
         }
     }
@@ -89,30 +89,28 @@ int attackCost(dGrahpM& g,vector<int>& attack){
 int main(){
     int cant_test = 0;
     cin>>cant_test;
-    for (int test = 0; test < cant_test; test++){
-        int cant_towers = 0;
-        cin>>cant_towers;
-        dGrahpM g {cant_towers};
-        attacked = vector<int>(cant_towers,0);
-        vector<int> attack_estrategy = {};
+    
+    for(int test = 0; test < cant_test; test++){
+        int n = 0;
+        cin>>n;
 
-        for (int tower_v = 0; tower_v < cant_towers; tower_v++){
-            for (int tower_u = 0; tower_u < cant_towers; tower_u++){
-                long cost_communication = 0;
-                cin>>cost_communication;
-                g.addEdge(tower_v,tower_u,cost_communication);
-            }   
+        dGrahpM g {n};
+        attacked = vector<int>(n,0);
+        estrategy = vector<int>(n,0);
+
+        for(int u = 0; u < n; u++){
+            for(int v = 0; v < n; v++){
+                int cost = 0;
+                cin>>cost;
+                g.addEdge(u,v,cost);
+            }    
         }
-        
-        for(int estrategy = 0; estrategy < cant_towers; estrategy++){
-            int attack = 0; 
-            cin>>attack;
-            attack_estrategy.push_back(attack);
-        }    
 
-        cout<<attackCost(g,attack_estrategy)<<endl;
+        for(int v = 0; v<n ; v++){
+            cin>>estrategy[v];
+        }
 
-    }
+        cout<<attackCost(g)<<endl;
     
     return 0;
 }
