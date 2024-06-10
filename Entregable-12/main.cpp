@@ -4,12 +4,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-//Estructura de adyacencia
-struct adjacency{
-    int dst;
-    int weight;
-};
-
 //Estructra de arista
 struct edge{
     int src;
@@ -26,7 +20,6 @@ class dGrahpM {
         dGrahpM(int n);
         void addEdge(int src,int dst,long weight);
         int getCantNodes();
-        vector<adjacency> getNeighborhood(int id);
         vector<edge> getEdges();
         vector<vector<long>> getDistances();
 };
@@ -45,16 +38,6 @@ int dGrahpM::getCantNodes(){
     return nodes;
 }
 
-vector<adjacency> dGrahpM::getNeighborhood(int id){
-    vector<adjacency> neighborhood = {};
-    for (size_t i = 0; i < adjacencys[id].size(); i++){
-        int weight_src_dst = adjacencys[id][i];
-        if(weight_src_dst > 0)
-            neighborhood.push_back({(int) i,weight_src_dst});
-    }
-    return neighborhood;
-}
-
 vector<edge> dGrahpM::getEdges(){
     return edges;
 }
@@ -66,7 +49,7 @@ vector<vector<long>> dGrahpM::getDistances(){
 vector<int> attacked = {};
 vector<int> estrategy = {};
 
-int attackCost(dGrahpM g){
+long attackCost(dGrahpM& g){
     int n = g.getCantNodes();
     vector<vector<long>> distances = g.getDistances();
     reverse(estrategy.begin(),estrategy.end());
@@ -87,11 +70,11 @@ int attackCost(dGrahpM g){
 }
 
 int main(){
-    int cant_test = 0;
+    long cant_test = 0;
     cin>>cant_test;
     
-    for(int test = 0; test < cant_test; test++){
-        int n = 0;
+    for(long test = 0; test < cant_test; test++){
+        long n = 0;
         cin>>n;
 
         dGrahpM g {n};
@@ -100,17 +83,18 @@ int main(){
 
         for(int u = 0; u < n; u++){
             for(int v = 0; v < n; v++){
-                int cost = 0;
+                long cost = 0;
                 cin>>cost;
                 g.addEdge(u,v,cost);
             }    
         }
 
-        for(int v = 0; v<n ; v++){
+        for(int v = 0; v < n ; v++){
             cin>>estrategy[v];
         }
 
         cout<<attackCost(g)<<endl;
-    
-    return 0;
+    }
+
+    return 0;  
 }
