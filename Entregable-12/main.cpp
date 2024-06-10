@@ -1,6 +1,5 @@
 #include "iostream"
 #include "vector"
-#include <limits>
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -11,6 +10,7 @@ struct edge{
     long weight;
 };
 
+//Implemetacion de grafo direccionado con matriz de adyacencia
 class dGrahpM {
     private:
         int nodes;
@@ -46,7 +46,9 @@ vector<vector<long>> dGrahpM::getDistances(){
     return adjacencys;
 }
 
+//Matengo los nodos a los que ya fui calculando las ditancias
 vector<int> attacked = {};
+//Mantengo al estrateia de ataque
 vector<int> estrategy = {};
 
 long attackCost(dGrahpM& g){
